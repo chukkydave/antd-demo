@@ -24,3 +24,26 @@ body {
   border-radius: 999rem !important;
   /* padding: 10rem; */
 }
+
+.contact-popover .ant-popover-inner {
+  padding: 0;
+}
+
+.contact-popover .ant-popover-title {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 0;
+}
+
+.contact-popover .ant-popover-inner-content {
+  padding: 24px;
+}
+
+/* Override Ant Design's default button color */
+.ant-btn-primary {
+  background-color: #D62027 !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: rgba(214, 32, 39, 0.8) !important;
+}

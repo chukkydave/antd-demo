@@ -1,31 +1,30 @@
-import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default withAuth(
-    function middleware(req) {
-        const isAuth = req.nextauth.token;
-        const isAuthPage = req.nextUrl.pathname.startsWith('/login') ||
-            req.nextUrl.pathname.startsWith('/register') ||
-            req.nextUrl.pathname.startsWith('/forgot-password');
+export function middleware(request: NextRequest) {
+    const token = request.cookies.get('token')?.value;
 
-        if (isAuthPage && isAuth) {
-            return NextResponse.redirect(new URL('/', req.url));
-        }
-    },
-    {
-        callbacks: {
-            authorized: ({ req, token }) => {
-                const isProtectedPage = req.nextUrl.pathname.startsWith('/bulk') ||
-                    req.nextUrl.pathname.startsWith('/history');
+    // Define auth pages (using exact path matching)
+    const isAuthPage = request.nextUrl.pathname === '/login' ||
+        request.nextUrl.pathname === '/register' ||
+        request.nextUrl.pathname === '/forgot-password';
 
-                if (isProtectedPage) {
-                    return !!token;
-                }
-                return true;
-            },
-        },
+    // Define protected pages
+    const isProtectedPage = request.nextUrl.pathname.startsWith('/bulk') ||
+        request.nextUrl.pathname.startsWith('/history');
+
+    // If user has token and tries to access auth pages, redirect to home
+    if (isAuthPage && token) {
+        return NextResponse.redirect(new URL('/', request.url));
     }
-);
+
+    // If user tries to access protected pages without token, redirect to login
+    if (isProtectedPage && !token) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    return NextResponse.next();
+}
 
 export const config = {
     matcher: [

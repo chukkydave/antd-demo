@@ -1,18 +1,18 @@
 'use client';
 
-import { useSession, signOut } from "next-auth/react";
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaUser } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
-    const { data: session, status } = useSession();
+    const { user, isAuthenticated, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const router = useRouter();
 
     const handleLogout = async () => {
-        await signOut({ redirect: false });
+        await logout();
         router.push('/login');
         router.refresh();
         setIsDropdownOpen(false);
@@ -25,12 +25,17 @@ const Navigation = () => {
                 className="flex items-center gap-2 text-gray-700 hover:text-[#D62027]"
             >
                 <FaUser className="w-5 h-5" />
-                <span>{session ? (session.user?.username || session.user?.email) : 'Account'}</span>
+                <span>
+                    {isAuthenticated
+                        ? `${user?.firstName} ${user?.lastName}`
+                        : 'Account'
+                    }
+                </span>
             </button>
 
             {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                    {session ? (
+                    {isAuthenticated ? (
                         // Logged in state
                         <button
                             onClick={handleLogout}

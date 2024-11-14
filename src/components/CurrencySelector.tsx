@@ -19,7 +19,7 @@ const currencies: Currency[] = [
 
 const DEFAULT_CURRENCY = currencies[0]; // USD as default
 
-const CurrencySelector = () => {
+const CurrencySelector = ({ className }: { className?: string }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState(DEFAULT_CURRENCY);
     const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +74,7 @@ const CurrencySelector = () => {
     if (isLoading) {
         return (
             <div className="flex items-center gap-2 px-3 py-2">
-                <span>$0.00</span>
+                <span className={className}>$0.00</span>
                 <div className='rounded-full w-6 h-6 overflow-hidden flex items-center justify-center bg-gray-100 animate-pulse'>
                 </div>
             </div>
@@ -87,7 +87,7 @@ const CurrencySelector = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-md transition-colors"
             >
-                <span>{selectedCurrency.symbol}0.00</span>
+                <span className={className}>{selectedCurrency.symbol}0.00</span>
                 <div className='rounded-full w-6 h-6 overflow-hidden flex items-center justify-center'>
                     <ReactCountryFlag
                         countryCode={selectedCurrency.countryCode}

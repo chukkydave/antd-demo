@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { signIn } from "next-auth/react";
 import Link from 'next/link';
 import { FaEyeSlash, FaEye } from "react-icons/fa";
+import { api } from '../lib/api';
+import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 interface FormData {
     email: string;
@@ -22,6 +25,7 @@ const LoginForm = () => {
         rememberMe: false
     });
     const [errors, setErrors] = useState<Partial<FormData>>({});
+    const { login } = useAuth();
 
     const validateForm = (): boolean => {
         const newErrors: Partial<FormData> = {};
@@ -63,20 +67,20 @@ const LoginForm = () => {
 
         setLoading(true);
         try {
-            const result = await signIn('credentials', {
+            const response = await api.post('/api/v1/auth/login', {
                 email: formData.email,
                 password: formData.password,
-                redirect: false,
             });
 
-            if (result?.error) {
-                throw new Error('Invalid credentials');
-            } else {
-                router.push('/'); // Redirect to home page
-                router.refresh(); // Refresh the page to update auth state
+            if (response.data.data.token) {
+                const { token, user } = response.data.data;
+                login(token, user);
+                toast.success('Login successful');
+                router.push('/');
+                router.refresh();
             }
         } catch (error: any) {
-            alert(error.message || 'An error occurred during login');
+            toast.error(error.response?.data?.message || 'An error occurred during login');
         } finally {
             setLoading(false);
         }

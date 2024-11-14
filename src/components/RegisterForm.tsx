@@ -1,22 +1,20 @@
-// 'use client';
-
-// import { useState } from 'react';
-// import { Form, Input, Button, message } from 'antd';
-// import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-// import { useRouter } from 'next/navigation';
-
-
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEyeSlash, FaEye } from "react-icons/fa";
-
+import { api } from '../lib/api';
+import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 interface FormData {
-    username: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
     email: string;
     password: string;
     confirmPassword: string;
+    gender: string;
+    dob: string;
 }
 
 const RegisterForm = () => {
@@ -25,18 +23,26 @@ const RegisterForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState<FormData>({
-        username: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        gender: '',
+        dob: ''
     });
     const [errors, setErrors] = useState<Partial<FormData>>({});
-
+    const { login } = useAuth();
     const validateForm = (): boolean => {
         const newErrors: Partial<FormData> = {};
 
-        if (!formData.username) {
-            newErrors.username = 'Please input your username!';
+        if (!formData.firstName) {
+            newErrors.firstName = 'Please input your first name!';
+        }
+
+        if (!formData.lastName) {
+            newErrors.lastName = 'Please input your last name!';
         }
 
         if (!formData.email) {
@@ -80,30 +86,27 @@ const RegisterForm = () => {
 
         setLoading(true);
         try {
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password,
-                }),
+            const response = await api.post('/api/v1/auth/register', {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phone: formData.phone,
+                email: formData.email,
+                password: formData.password,
+                gender: formData.gender,
+                dob: formData.dob,
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Registration failed');
+            if (response.data.status && response.data.data.token) {
+                const { token, user } = response.data.data;
+                login(token, user); // Use the same login function as LoginForm
+                toast.success('Registration successful');
+                router.push('/'); // Redirect to home instead of login
+                router.refresh();
+            } else {
+                throw new Error(response.data.message || 'Registration failed');
             }
-
-            // Show success message
-            alert('Registration successful');
-            router.push('/login');
         } catch (error: any) {
-            console.error('Registration error:', error);
-            alert(error.message || 'Registration failed');
+            toast.error(error.response?.data?.message || 'Registration failed');
         } finally {
             setLoading(false);
         }
@@ -112,20 +115,38 @@ const RegisterForm = () => {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-                <label htmlFor="username" className="block text-lg font-medium text-gray-700">
-                    Username
+                <label htmlFor="firstName" className="block text-lg font-medium text-gray-700">
+                    First Name
                 </label>
                 <input
                     type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
-                    className={`mt-1 block w-full px-3 py-3 border ${errors.username ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
-                    placeholder="Enter your username"
+                    className={`mt-1 block w-full px-3 py-3 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                    placeholder="Enter your first name"
                 />
-                {errors.username && (
-                    <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+                {errors.firstName && (
+                    <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
+                )}
+            </div>
+
+            <div>
+                <label htmlFor="lastName" className="block text-lg font-medium text-gray-700">
+                    Last Name
+                </label>
+                <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full px-3 py-3 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                    placeholder="Enter your last name"
+                />
+                {errors.lastName && (
+                    <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
                 )}
             </div>
 
@@ -221,5 +242,3 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
-
-// export default RegisterForm;

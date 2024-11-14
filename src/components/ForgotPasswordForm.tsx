@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
+import toast from 'react-hot-toast';
 
 const ForgotPasswordForm = () => {
     const [form] = Form.useForm();
@@ -9,9 +10,14 @@ const ForgotPasswordForm = () => {
 
     const onFinish = async (values: any) => {
         setLoading(true);
-        console.log('Success:', values);
-        // Here you would typically send a request to your password reset API
-        setLoading(false);
+        try {
+            // API call here
+            toast.success('Password reset instructions sent to your email');
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to send reset instructions');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

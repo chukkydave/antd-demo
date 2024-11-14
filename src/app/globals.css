@@ -47,3 +47,150 @@ body {
 .ant-btn-primary:hover {
   background-color: rgba(214, 32, 39, 0.8) !important;
 }
+
+/* Custom styles for the select options */
+.ant-select-item-option-content {
+  text-align: left !important;
+}
+
+.ant-select-item-option {
+  padding: 8px 12px !important;
+}
+
+/* Style for option groups */
+.ant-select-item-group {
+  font-weight: bold;
+  color: #666;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+}
+
+/* Center the selected item */
+.ant-select-selection-item {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+/* Center the placeholder */
+.ant-select-selection-placeholder {
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+/* Style for dropdown options */
+.checker-select-dropdown .ant-select-item-option-content {
+  text-align: left !important;
+}
+
+/* Style for option groups */
+.checker-select-dropdown .ant-select-item-group {
+  font-weight: bold;
+  color: #666;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+}
+
+/* Hover effect for options */
+.checker-select-dropdown .ant-select-item-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* Selected option style */
+.checker-select-dropdown .ant-select-item-option-selected {
+  background-color: #f6f6f6;
+  font-weight: 600;
+}
+
+/* Search input style */
+.ant-select-dropdown .ant-select-item-empty {
+  padding: 8px 12px;
+  color: #999;
+}
+
+/* Adjust arrow position */
+.ant-select-arrow {
+  right: 16px !important;
+}
+
+/* Custom scrollbar for dropdown */
+.checker-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar {
+  width: 8px;
+}
+
+.checker-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.checker-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.checker-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Add these to your existing CSS */
+.mobile-menu-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.mobile-menu-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.mobile-menu-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-menu-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Add to your existing styles */
+@media (max-width: 640px) {
+  .checker-select-selector {
+    font-size: 14px;
+  }
+  
+  .ant-select-dropdown {
+    max-width: 90vw;
+  }
+  
+  .ant-input-affix-wrapper {
+    height: auto !important;
+    padding: 8px 12px !important;
+  }
+  
+  .ant-input {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-popover {
+    width: 90vw !important;
+    max-width: none !important;
+  }
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-animation {
+  animation: modalFade 0.2s ease-out;
+}

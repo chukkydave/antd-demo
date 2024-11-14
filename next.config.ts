@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
+  images: {
+    remotePatterns: [
+      // your existing patterns
+    ],
+  },
   webpack: (config, { isServer }) => {
-    // Ignore the warning in development
     if (!isServer) {
       config.ignoreWarnings = [
         { module: /node_modules\/@rc-component\/trigger/ },

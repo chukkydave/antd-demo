@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { IoClose } from "react-icons/io5";
 import { FaRegBookmark } from "react-icons/fa";

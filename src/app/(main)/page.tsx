@@ -1,22 +1,11 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Layout from "@/components/Layout";
+
 import Checker from "@/components/Checker";
 import ChecksHeader from "@/components/ChecksHeader";
 import CheckerStats from "@/components/CheckerStats";
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <div className="items-center justify-items-center gap-6 sm:gap-8 md:gap-16 mt-40 lg:mt-48 px-4 md:px-6 lg:px-0 font-[family-name:var(--font-geist-sans)]">

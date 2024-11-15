@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Modal, Tabs, Button } from 'antd';
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons';

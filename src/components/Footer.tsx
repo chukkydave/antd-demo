@@ -32,58 +32,60 @@ const Footer = () => {
               <Image src={GooglePlayBadge} alt="Google Play" className="h-10" />
             </div>
           </div>
-          <div className="w-full md:w-1/4 mb-8 max-w-sm md:mb-0">
-            <h5 className="font-bold mb-4">Legal</h5>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-sm">
-                  Dispute Resolution
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  Return Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  Terms and Conditions
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  Corporate and Bulk Purchase
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="w-full md:w-1/4 mb-8 max-w-sm md:mb-0">
-            <h5 className="font-bold mb-4">About Ogabassey</h5>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-sm">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  Sell or Swap Device
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm">
-                  FAQs
-                </a>
-              </li>
-            </ul>
+          <div className="w-full md:w-2/4 flex justify-between mb-8 md:mb-0">
+            <div className="w-1/2 pr-2">
+              <h5 className="font-bold mb-4 text-sm sm:text-base">Legal</h5>
+              <ul className="space-y-1 sm:space-y-2">
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Dispute Resolution
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Return Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Terms and Conditions
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Corporate and Bulk Purchase
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="w-1/2 pl-2">
+              <h5 className="font-bold mb-4 text-sm sm:text-base">About Ogabassey</h5>
+              <ul className="space-y-1 sm:space-y-2">
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Contact
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    Sell or Swap Device
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-xs sm:text-sm">
+                    FAQs
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="w-full md:w-1/4 mb-8  max-w-sm md:mb-0">
-            <h5 className="font-bold mt-8 mb-4">Payment methods and delivery partners</h5>
+            <h5 className="font-bold mb-4 text-sm sm:text-base">Payment methods and delivery partners</h5>
             <Image src={CredPalLogo} alt="CredPal" className="h-10" />
           </div>
         </div>

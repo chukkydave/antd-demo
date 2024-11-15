@@ -110,7 +110,7 @@ function Checker() {
     return (
         <div className="w-full sm:w-[85%] md:w-3/4 relative flex justify-center items-center flex-col px-4 sm:px-0">
             <Input
-                className="!rounded-full !pl-5"
+                className="!rounded-full !pl-5 !text-black !h-14 sm:!h-16 !text-base sm:!text-lg"
                 prefix={<IoCamera className="text-gray-400 w-5 h-5 sm:w-6 sm:h-6" />}
                 placeholder="Enter your IMEI/Serial Number"
                 value={imei}
@@ -119,14 +119,14 @@ function Checker() {
                     <Button
                         onClick={handleCheck}
                         loading={loading}
-                        className="!rounded-full !py-4 sm:!py-6 !px-4 sm:!px-8 !font-semibold !text-sm sm:!text-base !text-white !bg-[#D62027]"
+                        className="!rounded-full !py-4 sm:!py-6 !px-6 sm:!px-10 !font-semibold !text-base sm:!text-lg !text-white !bg-[#D62027] !h-10 sm:!h-12"
                     >
                         Check
                     </Button>
                 }
             />
             <Select
-                className="!mt-4 !w-full sm:!w-3/4 !h-10 sm:!h-12 checker-select-selector"
+                className="!mt-4 !w-full sm:!w-3/4 !h-14 sm:!h-16 checker-select-selector !text-base"
                 value={selectedService}
                 onChange={setSelectedService}
                 options={transformedOptions}

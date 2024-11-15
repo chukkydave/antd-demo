@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Button, Select } from 'antd';
 import { IoCamera } from "react-icons/io5";
 import { checkerOptions, formatOptionLabel } from '../data/checkerOptions';
 import toast from 'react-hot-toast';
-import { api } from '@/lib/api';
 import axios from 'axios';
-import DOMPurify from 'dompurify';
+import dynamic from 'next/dynamic';
 import DeviceInfoModal from './DeviceInfoModal';
 import PaymentModal from './PaymentModal';
 
@@ -29,6 +28,21 @@ function Checker() {
     const [showModal, setShowModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
+
+    // Move initial setup into useEffect
+    useEffect(() => {
+        // Any initialization that might depend on browser APIs
+        setSelectedService("0");
+    }, []);
+
+    // Dynamically import modals
+    const DeviceInfoModalComponent = dynamic(() => import('./DeviceInfoModal'), {
+        ssr: false
+    });
+
+    const PaymentModalComponent = dynamic(() => import('./PaymentModal'), {
+        ssr: false
+    });
 
     // Transform the data structure for Ant Design Select
     const transformedOptions = checkerOptions.map(option => {
@@ -125,14 +139,14 @@ function Checker() {
 
             {/* Modal */}
             {result && (
-                <DeviceInfoModal
+                <DeviceInfoModalComponent
                     isOpen={showModal}
                     onClose={() => setShowModal(false)}
                     data={result}
                 />
             )}
 
-            <PaymentModal
+            <PaymentModalComponent
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
                 amount={selectedPrice || 0}

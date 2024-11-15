@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AntdRegistry } from '@ant-design/nextjs-registry';
+// import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from 'react-hot-toast';
 
@@ -33,9 +33,9 @@ export default function RootLayout({
       >
         <Toaster position="top-right" />
         <AuthProvider>
-          <AntdRegistry>
+          {/* <AntdRegistry> */}
             {children}
-          </AntdRegistry>
+          {/* </AntdRegistry> */}
         </AuthProvider>
       </body>
     </html>

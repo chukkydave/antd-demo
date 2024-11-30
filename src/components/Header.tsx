@@ -80,7 +80,7 @@ const Header = () => {
             mx-auto 
             ${isOpen ? 'bg-black' : 'bg-[#Fafafa] md:bg-white'} 
             md:rounded-full 
-            lg:shadow-md
+            md:mt-8
             transition-colors 
             duration-300
           `}>
@@ -94,7 +94,7 @@ const Header = () => {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex space-x-5 lg:space-x-20">
+              <nav className="hidden md:flex space-x-8 lg:space-x-20">
                 <button
                   onClick={() => handleProtectedRoute('/bulk')}
                   className="flex items-center gap-1 hover:text-[#D62027]"

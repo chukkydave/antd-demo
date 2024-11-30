@@ -22,7 +22,6 @@ body {
 
 .ant-select-selector {
   border-radius: 999rem !important;
-  /* padding: 10rem; */
 }
 
 .contact-popover .ant-popover-inner {
@@ -50,7 +49,7 @@ body {
 
 /* Custom styles for the select options */
 .ant-select-item-option-content {
-  text-align: left !important;
+  text-align: center !important;
 }
 
 .ant-select-item-option {
@@ -153,6 +152,10 @@ body {
   transition: opacity 300ms, transform 300ms;
 }
 
+.ant-select-selection-search-input {
+  text-align: center !important;
+}
+
 /* Add to your existing styles */
 @media (max-width: 640px) {
   .checker-select-selector {
@@ -193,4 +196,51 @@ body {
 
 .modal-animation {
   animation: modalFade 0.2s ease-out;
+}
+
+/* Option 1: Using Ant Design's focused-within state */
+.ant-select-focused .ant-select-selector {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+/* Option 2: Using the focus state directly */
+.ant-select .ant-select-selector:focus,
+.ant-select .ant-select-selector:focus-within {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+/* For the Input component */
+.ant-input:focus,
+.ant-input-focused {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+.ant-input-affix-wrapper.ant-input-outlined:focus-within {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+.ant-input-affix-wrapper.ant-input-outlined:hover {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+.ant-input-affix-wrapper.ant-input-outlined:target {
+  border-color: #D62027 !important;
+  box-shadow: 0 0 0 2px rgba(214, 32, 39, 0.1) !important;
+}
+
+.checker-select-selector:focus {
+  border-color: #D62027 !important;
+}
+
+.checker-select-selector:hover {
+  border-color: #D62027 !important;
+}
+
+.ant-select-outlined:hover {
+  outline: none !important;
 }

@@ -7,6 +7,7 @@ import flag from "../assets/us_flag.png";
 import Image from "next/image";
 import { FaClockRotateLeft } from "react-icons/fa6";
 import { FaEnvelope } from "react-icons/fa";
+import { RiDashboardFill } from "react-icons/ri";
 import { UserOutlined, DownOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import { BiSolidBolt } from "react-icons/bi";
 import Link from 'next/link';
@@ -102,10 +103,10 @@ const Header = () => {
                   <BiSolidBolt /> Bulk
                 </button>
                 <button
-                  onClick={() => handleProtectedRoute('/history')}
+                  onClick={() => handleProtectedRoute('/dashboard')}
                   className="flex items-center gap-1 hover:text-[#D62027]"
                 >
-                  <FaClockRotateLeft /> History
+                  <RiDashboardFill /> Dashboard
                 </button>
                 <Popover
                   content={<ContactForm onSubmit={handleContactSubmit} />}
@@ -211,12 +212,12 @@ const Header = () => {
                 </button>
                 <button
                   onClick={() => {
-                    handleProtectedRoute('/history');
+                    handleProtectedRoute('/dashboard');
                     setIsOpen(false);
                   }}
                   className="flex items-center gap-2 text-white hover:text-[#D62027] px-3 py-2 text-lg"
                 >
-                  <FaClockRotateLeft /> History
+                  <RiDashboardFill /> Dashboard
                 </button>
                 <button
                   onClick={() => {

@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 
     // Define protected pages
     const isProtectedPage = request.nextUrl.pathname.startsWith('/bulk') ||
-        request.nextUrl.pathname.startsWith('/history');
+        request.nextUrl.pathname.startsWith('/dashboard');
 
     // If user has token and tries to access auth pages, redirect to home
     if (isAuthPage && token) {
@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/bulk',
-        '/history',
+        '/dashboard',
         '/login',
         '/register',
         '/forgot-password'

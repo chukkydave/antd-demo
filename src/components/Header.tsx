@@ -103,14 +103,14 @@ const Header = () => {
               <nav className="hidden md:flex space-x-8 lg:space-x-20">
                 <button
                   onClick={() => handleProtectedRoute('/bulk')}
-                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/bulk') ? 'text-[#D62027]' : ''
+                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/bulk') ? 'text-[#D62027]' : 'text-gray-700'
                     }`}
                 >
                   <BiSolidBolt /> Bulk
                 </button>
                 <button
                   onClick={() => handleProtectedRoute('/dashboard')}
-                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/dashboard') ? 'text-[#D62027]' : ''
+                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/dashboard') ? 'text-[#D62027]' : 'text-gray-700'
                     }`}
                 >
                   <RiDashboardFill /> Dashboard
@@ -123,7 +123,7 @@ const Header = () => {
                   placement="bottom"
                   overlayClassName="contact-popover"
                 >
-                  <button className="flex items-center gap-1 hover:text-[#D62027]">
+                  <button className="flex items-center gap-1 hover:text-[#D62027] text-gray-700">
                     <FaEnvelope /> Contact
                   </button>
                 </Popover>
@@ -135,7 +135,7 @@ const Header = () => {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center gap-1 cursor-pointer"
+                    className="flex items-center gap-1 cursor-pointer text-gray-700"
                   >
                     {isAuthenticated ? (
                       <>
@@ -167,7 +167,7 @@ const Header = () => {
                             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={() => setShowDropdown(false)}
                           >
-                            <LoginOutlined className="!text-[#D62027]" />
+                            <LoginOutlined className="!text-[#D62027] " />
                             <span>Login</span>
                           </Link>
                           <Link

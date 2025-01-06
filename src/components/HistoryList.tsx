@@ -2,6 +2,7 @@
 
 import { Table, Badge } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import { useMediaQuery } from 'react-responsive';
 
 interface DataType {
     key: string;
@@ -20,18 +21,20 @@ interface HistoryListProps {
 }
 
 const HistoryList = ({ activeTab, searchQuery, selectedDate }: HistoryListProps) => {
+    const isMobile = useMediaQuery({ maxWidth: 768 });
+
     const columns: ColumnsType<DataType> = [
         {
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
-            width: 100,
+            width: isMobile ? 80 : '10%',
         },
         {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 120,
+            width: isMobile ? 100 : '15%',
             render: (status) => (
                 <div className="flex items-center space-x-2">
                     <Badge
@@ -42,26 +45,29 @@ const HistoryList = ({ activeTab, searchQuery, selectedDate }: HistoryListProps)
                             'text-red-600'
                         }`}>{status}</p>
                 </div>
-
             ),
         },
         {
             title: 'Service',
             dataIndex: 'service',
             key: 'service',
-            width: 300,
+            width: isMobile ? 200 : '35%',
+            ellipsis: false,
+            render: (service) => (
+                <div className="whitespace-normal line-clamp-2">{service}</div>
+            ),
         },
         {
             title: 'IMEI',
             dataIndex: 'imei',
             key: 'imei',
-            width: 150,
+            width: isMobile ? 120 : '15%',
         },
         {
             title: 'Info',
             dataIndex: 'info',
             key: 'info',
-            width: 100,
+            width: isMobile ? 80 : '10%',
             render: (info) => info === '---' ? info : (
                 <button className="text-blue-600 hover:underline">
                     View result
@@ -72,7 +78,7 @@ const HistoryList = ({ activeTab, searchQuery, selectedDate }: HistoryListProps)
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            width: 150,
+            width: isMobile ? 120 : '15%',
         },
     ];
 
@@ -165,8 +171,13 @@ const HistoryList = ({ activeTab, searchQuery, selectedDate }: HistoryListProps)
         <Table
             columns={columns}
             dataSource={filteredData}
-            pagination={{ pageSize: 10 }}
-            className="rounded-lg"
+            pagination={{
+                pageSize: 10,
+                responsive: true,
+                position: ['bottomCenter']
+            }}
+            scroll={{ x: isMobile ? 'max-content' : undefined }}
+            className="w-full"
         />
     );
 };

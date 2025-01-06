@@ -7,10 +7,11 @@ import flag from "../assets/us_flag.png";
 import Image from "next/image";
 import { FaClockRotateLeft } from "react-icons/fa6";
 import { FaEnvelope } from "react-icons/fa";
+import { RiDashboardFill } from "react-icons/ri";
 import { UserOutlined, DownOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import { BiSolidBolt } from "react-icons/bi";
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import AlertMessage from './AlertMessage';
 import ContactPopover from './ContactPopover';
 import CurrencySelector from './CurrencySelector';
@@ -23,6 +24,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -69,6 +71,10 @@ const Header = () => {
     setContactOpen(false);
   };
 
+  const isActivePath = (path: string) => {
+    return pathname === path;
+  };
+
   if (!mounted) return null;
 
   return (
@@ -97,15 +103,17 @@ const Header = () => {
               <nav className="hidden md:flex space-x-8 lg:space-x-20">
                 <button
                   onClick={() => handleProtectedRoute('/bulk')}
-                  className="flex items-center gap-1 hover:text-[#D62027]"
+                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/bulk') ? 'text-[#D62027]' : ''
+                    }`}
                 >
                   <BiSolidBolt /> Bulk
                 </button>
                 <button
-                  onClick={() => handleProtectedRoute('/history')}
-                  className="flex items-center gap-1 hover:text-[#D62027]"
+                  onClick={() => handleProtectedRoute('/dashboard')}
+                  className={`flex items-center gap-1 hover:text-[#D62027] ${isActivePath('/dashboard') ? 'text-[#D62027]' : ''
+                    }`}
                 >
-                  <FaClockRotateLeft /> History
+                  <RiDashboardFill /> Dashboard
                 </button>
                 <Popover
                   content={<ContactForm onSubmit={handleContactSubmit} />}
@@ -205,18 +213,20 @@ const Header = () => {
                     handleProtectedRoute('/bulk');
                     setIsOpen(false);
                   }}
-                  className="flex items-center gap-2 text-white hover:text-[#D62027] px-3 py-2 text-lg"
+                  className={`flex items-center gap-2 text-white hover:text-[#D62027] px-3 py-2 text-lg ${isActivePath('/bulk') ? 'text-[#D62027]' : ''
+                    }`}
                 >
                   <BiSolidBolt /> Bulk
                 </button>
                 <button
                   onClick={() => {
-                    handleProtectedRoute('/history');
+                    handleProtectedRoute('/dashboard');
                     setIsOpen(false);
                   }}
-                  className="flex items-center gap-2 text-white hover:text-[#D62027] px-3 py-2 text-lg"
+                  className={`flex items-center gap-2 text-white hover:text-[#D62027] px-3 py-2 text-lg ${isActivePath('/dashboard') ? 'text-[#D62027]' : ''
+                    }`}
                 >
-                  <FaClockRotateLeft /> History
+                  <RiDashboardFill /> Dashboard
                 </button>
                 <button
                   onClick={() => {

@@ -161,16 +161,16 @@ body {
   .checker-select-selector {
     font-size: 14px;
   }
-  
+
   .ant-select-dropdown {
     max-width: 90vw;
   }
-  
+
   .ant-input-affix-wrapper {
     height: auto !important;
     padding: 8px 12px !important;
   }
-  
+
   .ant-input {
     font-size: 14px !important;
   }
@@ -188,6 +188,7 @@ body {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -243,4 +244,23 @@ body {
 
 .ant-select-outlined:hover {
   outline: none !important;
+}
+
+/* Add these to your existing styles */
+.ant-table-thead>tr>th {
+  background: #f9fafb !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+}
+
+.ant-table-tbody>tr>td {
+  padding: 16px !important;
+}
+
+.ant-pagination-item-active {
+  border-color: #D62027 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #D62027 !important;
 }

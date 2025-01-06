@@ -12,11 +12,11 @@ function ChecksHeader() {
             {/* Floating images */}
             <div className="absolute w-full h-full">
                 {/* Left side images */}
-                <div className="absolute left-0 sm:left-[-10%] top-[-20%] sm:top-[-40%] -translate-x-2 sm:-translate-x-8">
+                <div className="absolute left-0 md:left-[0] top-[-20%] sm:top-[-40%] -translate-x-2 sm:-translate-x-8">
                     <Image src={Key} alt="Key" className="w-6 h-6 sm:w-12 sm:h-12" />
                 </div>
 
-                <div className="absolute left-0 sm:left-[-10%] top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-16">
+                <div className="absolute left-0 md:left-[0] top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-16">
                     <Image src={ThumbsUp} alt="Thumbs Up" className="w-6 h-6 sm:w-12 sm:h-12" />
                 </div>
 
@@ -25,15 +25,15 @@ function ChecksHeader() {
                 </div>
 
                 {/* Right side images */}
-                <div className="absolute right-0 top-[-20%] sm:top-[-40%] translate-x-2 sm:translate-x-8">
+                <div className="absolute right-[10%] md:right-[0] top-[-20%] sm:top-[-40%] translate-x-2 sm:translate-x-8">
                     <Image src={Wifi} alt="Wifi" className="w-6 h-6 sm:w-12 sm:h-12" />
                 </div>
 
-                <div className="absolute right-0 sm:right-[-10%] top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-16">
+                <div className="absolute right-[10%] md:right-[0] top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-16">
                     <Image src={Lock} alt="Lock" className="w-6 h-6 sm:w-12 sm:h-12" />
                 </div>
 
-                <div className="absolute right-0 sm:right-[-5%] bottom-[-20%] sm:bottom-[-30%] translate-x-2 sm:translate-x-4">
+                <div className="absolute right-[10%] md:right-[-5%] bottom-[-20%] sm:bottom-[-30%] translate-x-2 sm:translate-x-4">
                     <Image src={Checkmark} alt="Checkmark" className="w-6 h-6 sm:w-12 sm:h-12" />
                 </div>
             </div>

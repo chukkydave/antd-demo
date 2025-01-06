@@ -101,7 +101,7 @@ const LoginForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`mt-1 block w-full px-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'
+                    className={`mt-1 block w-full text-gray-700 px-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'
                         } rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                     placeholder="Enter your email"
                 />
@@ -124,7 +124,7 @@ const LoginForm = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className={`mt-1 block w-full px-3 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'
+                        className={`mt-1 block w-full text-gray-700 px-3 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'
                             } rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                         placeholder="Enter your password"
                     />
@@ -152,7 +152,7 @@ const LoginForm = () => {
                         name="rememberMe"
                         checked={formData.rememberMe}
                         onChange={handleChange}
-                        className="h-4 w-4 text-[#D62027] focus:ring-[#D62027] border-gray-300 rounded"
+                        className="h-4 w-4 text-[#D62027] accent-[#D62027] focus:ring-[#D62027] border-gray-300 rounded"
                     />
                     <span className="ml-2 text-gray-700">Remember me for 30 days</span>
                 </label>

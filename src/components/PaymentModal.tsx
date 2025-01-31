@@ -117,8 +117,13 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                 amount: amount * 100,
                 reference: `REF-${Date.now()}`,
                 metadata: {
-                    serviceType: isUnlockService(service) ? 'unlock' : 'checker',
-                    imei: imei
+                    order: {
+                        identifier: imei,
+                        items: [{
+                            name: `service: ${service}`,
+                            type: isUnlockService(service) ? 'unlock' : 'checker',
+                        }]
+                    },
                 }
             });
 

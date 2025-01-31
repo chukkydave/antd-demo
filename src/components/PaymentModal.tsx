@@ -121,9 +121,9 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                         identifier: imei,
                         items: [{
                             name: `service: ${service}`,
-                            type: isUnlockService(service) ? 'unlock' : 'checker',
+                            type: "digital",
                         }]
-                    },
+                    }
                 }
             });
 

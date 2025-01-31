@@ -144,3 +144,5 @@ export const formatOptionLabel = (option: ServiceOption): string => {
         : `${option.price.toFixed(2)}$`;
     return `${price} - ${option.text}`;
 };
+
+export { unlockOptions } from './unlockOptions';

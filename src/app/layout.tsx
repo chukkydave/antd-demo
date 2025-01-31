@@ -4,6 +4,7 @@ import "./globals.css";
 // import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from 'react-hot-toast';
+import { CurrencyProvider } from '@/contexts/CurrencyContext';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,11 +33,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#FAFAFA]`}
       >
         <Toaster position="top-right" />
-        <AuthProvider>
-          {/* <AntdRegistry> */}
+        <CurrencyProvider>
+          <AuthProvider>
+            {/* <AntdRegistry> */}
             {children}
-          {/* </AntdRegistry> */}
-        </AuthProvider>
+            {/* </AntdRegistry> */}
+          </AuthProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

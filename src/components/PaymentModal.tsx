@@ -195,10 +195,10 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                         className="w-full !rounded-none"
                         placeholder="Select Country"
                         value={binanceFormData.country || undefined}
-                        onChange={(value, option: any) => {
+                        onChange={(value) => {
                             setBinanceFormData(prev => ({
                                 ...prev,
-                                country: option.label,
+                                country: value,
                                 state: '',
                                 city: ''
                             }));

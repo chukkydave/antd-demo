@@ -217,14 +217,13 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                     <Select
                         placeholder="Select State"
                         value={binanceFormData.state || undefined}
-                        onChange={(value, option: any) => {
+                        onChange={(value) => {
                             setBinanceFormData(prev => ({
                                 ...prev,
-                                state: option.label,  // Store full name instead of code
+                                state: value,
                                 city: ''
                             }));
-                            const countryCode = countries.find(c => c.name === binanceFormData.country)?.isoCode;
-                            setCities(City.getCitiesOfState(countryCode!, value));
+                            setCities(City.getCitiesOfState(binanceFormData.country, value));
                         }}
                         options={states.map(state => ({
                             value: state.isoCode,

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import ReactCountryFlag from 'react-country-flag';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface Currency {
     code: string;
@@ -12,18 +13,18 @@ interface Currency {
 
 const currencies: Currency[] = [
     { code: 'USD', symbol: '$', countryCode: 'US', name: 'US Dollar' },
-    { code: 'GBP', symbol: '£', countryCode: 'GB', name: 'British Pound' },
-    { code: 'EUR', symbol: '€', countryCode: 'EU', name: 'Euro' },
+    // { code: 'GBP', symbol: '£', countryCode: 'GB', name: 'British Pound' },
+    // { code: 'EUR', symbol: '€', countryCode: 'EU', name: 'Euro' },
     { code: 'NGN', symbol: '₦', countryCode: 'NG', name: 'Nigerian Naira' },
 ];
 
-const DEFAULT_CURRENCY = currencies[0]; // USD as default
-
 const CurrencySelector = ({ className }: { className?: string }) => {
     const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedCurrency, setSelectedCurrency] = useState(DEFAULT_CURRENCY);
     const [isLoading, setIsLoading] = useState(true);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { currentCurrency, setCurrentCurrency } = useCurrency();
+
+    const selectedCurrency = currencies.find(c => c.code === currentCurrency) || currencies[0];
 
     useEffect(() => {
         const detectUserCurrency = async () => {
@@ -31,29 +32,25 @@ const CurrencySelector = ({ className }: { className?: string }) => {
                 const response = await fetch('https://ipapi.co/json/');
                 const data = await response.json();
 
-                // Check if user's country matches any of our supported currencies
                 const userCurrency = currencies.find(currency =>
-                    // Handle special case for EU countries
                     currency.code === 'EUR' ?
                         ['AT', 'BE', 'DE', 'ES', 'FI', 'FR', 'IE', 'IT', 'NL', 'PT'].includes(data.country) :
                         currency.countryCode === data.country
                 );
 
-                // Set to user's currency if supported, otherwise keep USD
                 if (userCurrency) {
-                    setSelectedCurrency(userCurrency);
+                    setCurrentCurrency(userCurrency.code);
                 }
             } catch (error) {
                 console.error('Error detecting user location:', error);
-                // Fallback to USD in case of error
-                setSelectedCurrency(DEFAULT_CURRENCY);
+                setCurrentCurrency('USD');
             } finally {
                 setIsLoading(false);
             }
         };
 
         detectUserCurrency();
-    }, []);
+    }, [setCurrentCurrency]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -70,6 +67,11 @@ const CurrencySelector = ({ className }: { className?: string }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showDropdown]);
+
+    const handleCurrencySelect = (currency: Currency) => {
+        setCurrentCurrency(currency.code);
+        setShowDropdown(false);
+    };
 
     if (isLoading) {
         return (
@@ -106,11 +108,8 @@ const CurrencySelector = ({ className }: { className?: string }) => {
                     {currencies.map((currency) => (
                         <button
                             key={currency.code}
-                            onClick={() => {
-                                setSelectedCurrency(currency);
-                                setShowDropdown(false);
-                            }}
-                            className={`flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ${selectedCurrency.code === currency.code ? 'bg-gray-50' : ''
+                            onClick={() => handleCurrencySelect(currency)}
+                            className={`flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ${currentCurrency === currency.code ? 'bg-gray-50' : ''
                                 }`}
                         >
                             <div className='rounded-full w-6 h-6 overflow-hidden flex items-center justify-center'>

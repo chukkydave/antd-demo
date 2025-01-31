@@ -6,14 +6,17 @@ import { FaRegBookmark } from "react-icons/fa";
 import { FaBookmark } from "react-icons/fa";
 import toast from 'react-hot-toast';
 import DOMPurify from 'dompurify';
+import axios from 'axios';
 
 interface DeviceInfoModalProps {
     isOpen: boolean;
     onClose: () => void;
     data: any;
+    imei: string;
+    service: string;
 }
 
-const DeviceInfoModal = ({ isOpen, onClose, data }: DeviceInfoModalProps) => {
+const DeviceInfoModal = ({ isOpen, onClose, data, imei, service }: DeviceInfoModalProps) => {
     const [isSaved, setIsSaved] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -22,11 +25,27 @@ const DeviceInfoModal = ({ isOpen, onClose, data }: DeviceInfoModalProps) => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            // Call your save endpoint here
-            // const response = await axios.post('/api/save-device-info', data);
+            const response = await axios.post('/api/v1/checkers', {
+                type: 'checker',
+                imei,
+                service,
+                status: 'completed',
+                result: data.result
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`
+                }
+            });
+
+            if (!response.data) {
+                throw new Error('Failed to save result');
+            }
+
             setIsSaved(true);
             toast.success('Device information saved successfully');
         } catch (error) {
+            console.error('Save Error:', error);
             toast.error('Failed to save device information');
         } finally {
             setSaving(false);
@@ -43,6 +62,7 @@ const DeviceInfoModal = ({ isOpen, onClose, data }: DeviceInfoModalProps) => {
                         onClick={handleSave}
                         disabled={saving || isSaved}
                         className="text-xl hover:text-[#D62027] transition-colors"
+                        title={isSaved ? 'Already saved' : 'Save result'}
                     >
                         {isSaved ? (
                             <FaBookmark className="text-[#D62027]" />

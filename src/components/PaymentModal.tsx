@@ -132,8 +132,8 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
 
             const payment = await juicePaymentService.capturePayment(session.data.payment.id, {
                 crypto_address: {
-                    chain: "USDC, USDT, TRX",
-                    currency: "USDC | USDT | BUSD"
+                    chain: "USDC",
+                    currency: "USDT"
                 }
             });
 

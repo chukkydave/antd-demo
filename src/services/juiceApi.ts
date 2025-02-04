@@ -11,6 +11,13 @@ const api = axios.create({
     }
 });
 
+interface CryptoAddressPayload {
+    crypto_address: {
+        chain: string;
+        currency: string;
+    }
+}
+
 interface PaymentSession {
     customer: {
         first_name: string;
@@ -42,8 +49,8 @@ export const juicePaymentService = {
         return response.data;
     },
 
-    capturePayment: async (paymentId: string) => {
-        const response = await api.post(`/payment-sessions/${paymentId}`);
+    capturePayment: async (paymentId: string, payload: CryptoAddressPayload) => {
+        const response = await api.post(`/payment-sessions/${paymentId}`, payload);
         return response.data;
     }
 }; 

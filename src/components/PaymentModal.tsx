@@ -116,6 +116,10 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                 currency: "USD",
                 amount: amount * 100,
                 reference: `REF-${Date.now()}`,
+                payment_method: {
+                    type: "crypto address"
+                },
+                isLive: false,
                 metadata: {
                     order: {
                         identifier: imei,

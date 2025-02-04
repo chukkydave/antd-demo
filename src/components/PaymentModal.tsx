@@ -119,7 +119,6 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                 payment_method: {
                     type: "crypto address"
                 },
-                isLive: false,
                 metadata: {
                     order: {
                         identifier: imei,

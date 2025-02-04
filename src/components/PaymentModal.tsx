@@ -38,7 +38,7 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
     const [countries, setCountries] = useState<any[]>([]);
     const [states, setStates] = useState<any[]>([]);
     const [cities, setCities] = useState<any[]>([]);
-    const walletAddress = "YOUR_CRYPTO_WALLET_ADDRESS";
+    const [walletAddress, setWalletAddress] = useState('');
 
     // Paystack configuration
     const config = {
@@ -130,14 +130,22 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
                 }
             });
 
-            const payment = await juicePaymentService.capturePayment(session.data.payment.id);
+            const payment = await juicePaymentService.capturePayment(session.data.payment.id, {
+                crypto_address: {
+                    chain: "USDC, USDT, TRX",
+                    currency: "USDC | USDT | BUSD"
+                }
+            });
 
-            if (payment.data.links?.checkout_url) {
-                window.location.href = payment.data.links.checkout_url;
+            if (payment.data.payment.payment_method.address) {
+                // Show the crypto address to the user
+                setWalletAddress(payment.data.payment.payment_method.address);
+                setActiveTab('3'); // Switch to crypto payment tab
+                toast.success('Please complete the payment using the provided address', { id: 'payment' });
             }
         } catch (error) {
-            console.error('Binance Pay Error:', error);
-            toast.error('Failed to initialize Binance Pay', { id: 'payment' });
+            console.error('Payment Error:', error);
+            toast.error('Failed to initialize payment', { id: 'payment' });
         }
     };
 

@@ -30,6 +30,10 @@ interface PaymentSession {
     currency: string;
     amount: number;
     reference: string;
+    isLive: boolean;
+    payment_method: {
+        type: string;
+    };
     metadata?: Record<string, any>;
 }
 

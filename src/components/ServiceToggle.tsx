@@ -12,7 +12,7 @@ const ServiceToggle = ({ activeService, onToggle }: ServiceToggleProps) => {
                 onClick={() => onToggle('checker')}
                 className={`pb-2 px-4 font-medium transition-colors relative ${activeService === 'checker'
                     ? 'text-[#D62027] border-b-2 border-[#D62027]'
-                    : 'text-gray-300 hover:text-gray-700'
+                    : 'text-gray-400 hover:text-gray-700'
                     }`}
             >
                 Checker
@@ -21,7 +21,7 @@ const ServiceToggle = ({ activeService, onToggle }: ServiceToggleProps) => {
                 onClick={() => onToggle('unlock')}
                 className={`pb-2 px-4 font-medium transition-colors relative ${activeService === 'unlock'
                     ? 'text-[#D62027] border-b-2 border-[#D62027]'
-                    : 'text-gray-300 hover:text-gray-700'
+                    : 'text-gray-400 hover:text-gray-700'
                     }`}
             >
                 Unlock

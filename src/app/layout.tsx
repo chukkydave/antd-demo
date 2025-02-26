@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from 'react-hot-toast';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
+import ClientLoader from '@/components/ClientLoader';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "OgaBassey IMEI Checker",
+  title: "Almost Free IMEI Checker and Unlocker",
   description: "Ogabassey Never Disappoints",
 };
 
@@ -35,9 +36,9 @@ export default function RootLayout({
         <Toaster position="top-right" />
         <CurrencyProvider>
           <AuthProvider>
-            {/* <AntdRegistry> */}
-            {children}
-            {/* </AntdRegistry> */}
+            <ClientLoader>
+              {children}
+            </ClientLoader>
           </AuthProvider>
         </CurrencyProvider>
       </body>

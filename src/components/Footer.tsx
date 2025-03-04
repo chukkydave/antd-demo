@@ -80,7 +80,7 @@ const Footer = () => {
               <ul className="space-y-1 sm:space-y-2">
                 <li>
                   <a href="#" className="text-xs font-extralight opacity-80 sm:text-sm">
-                    OgaBassey Repair
+                    OgaBassey Shop
                   </a>
                 </li>
                 <li>

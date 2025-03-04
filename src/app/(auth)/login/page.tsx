@@ -1,6 +1,7 @@
 import AuthLayout from '@/components/AuthLayout';
 import LoginForm from '@/components/LoginForm';
-import two from '@/assets/two.jpeg';
+// import two from '@/assets/two.jpeg';
+import two from '@/assets/community.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,7 +13,7 @@ export default function LoginPage() {
                 <div className="hidden md:flex md:w-1/2 pr-6 lg:pr-12 py-10 lg:py-20 flex-col justify-between">
                     <div>
                         <h1 className="text-4xl lg:text-6xl font-semibold text-black mb-8">Instantly Confirm Your Device's <span className='text-[#D62027]'>Authenticity.</span></h1>
-                        <p className="opacity-40 max-w-md text-base lg:text-xl mb-8">Use our IMEI checker to ensure your phone is legitimate and safe from blacklists.</p>
+                        <p className="text-gray-500 max-w-md text-base lg:text-xl mb-8">Use our IMEI checker to ensure your phone is legitimate and safe from blacklists.</p>
                     </div>
                     <Image
                         src={two}

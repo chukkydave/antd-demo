@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Input, Button, Select, Modal, Spin, message } from 'antd';
+import { Input, Button, Modal, Spin, message } from 'antd';
 import { IoCamera } from "react-icons/io5";
 import { checkerOptions, unlockOptions, formatOptionLabel } from '../data/checkerOptions';
 import toast from 'react-hot-toast';
@@ -14,6 +14,7 @@ import { useService } from '@/contexts/ServiceContext';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import Select from './ui/Select';
 
 interface CheckResponse {
     result: string;
@@ -109,7 +110,7 @@ function Checker() {
 
         if (activeService === 'checker') {
             return [
-                { value: "checker_default", label: "PLEASE CHOOSE CHECKER" },
+                { value: "checker_default", label: "Please choose checker" },
                 ...checkerServices.map(service => ({
                     value: service.service,
                     label: `${service.name} - ${convertPrice(parseFloat(service.price))}`
@@ -117,7 +118,7 @@ function Checker() {
             ];
         } else {
             return [
-                { value: "unlock_default", label: "PLEASE CHOOSE UNLOCK SERVICE" },
+                { value: "unlock_default", label: "Please choose unlock service" },
                 ...unlockServices.map(service => ({
                     value: service.service,
                     label: `${service.name} - ${convertPrice(parseFloat(service.price))}`
@@ -286,16 +287,13 @@ function Checker() {
                 }
             />
             <Select
-                className="checker-select-selector !text-base !mx-auto !mt-4 !w-full sm:!w-3/4 !h-10 sm:!h-12"
                 value={selectedService}
                 onChange={setSelectedService}
                 options={transformedOptions}
                 placeholder={`Please Choose ${activeService === 'checker' ? 'Checker' : 'Unlock Service'}`}
-                optionFilterProp="label"
-                showSearch
-                size="large"
                 loading={servicesLoading}
-                popupClassName="checker-select-dropdown"
+                searchable
+                className="!mt-4 !w-full sm:!w-3/4 mx-auto"
             />
 
             {/* Modal */}

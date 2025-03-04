@@ -124,7 +124,7 @@ const RegisterForm = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className={`mt-1 block w-full px-3 py-3 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                    className={`mt-1 block w-full px-3 py-3 border text-black ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                     placeholder="Enter your first name"
                 />
                 {errors.firstName && (
@@ -142,7 +142,7 @@ const RegisterForm = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className={`mt-1 block w-full px-3 py-3 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                    className={`mt-1 block w-full px-3 py-3 border text-black ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                     placeholder="Enter your last name"
                 />
                 {errors.lastName && (
@@ -160,7 +160,7 @@ const RegisterForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`mt-1 block w-full px-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                    className={`mt-1 block w-full px-3 py-3 border text-black ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                     placeholder="Enter your email"
                 />
                 {errors.email && (
@@ -179,7 +179,7 @@ const RegisterForm = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className={`mt-1 block w-full px-3 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                        className={`mt-1 block w-full px-3 py-3 border text-black ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                         placeholder="Enter your password"
                     />
                     <button
@@ -210,7 +210,7 @@ const RegisterForm = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        className={`mt-1 block w-full px-3 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
+                        className={`mt-1 block w-full px-3 py-3 border text-black ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-[#D62027] focus:border-[#D62027]`}
                         placeholder="Confirm your password"
                     />
                     <button

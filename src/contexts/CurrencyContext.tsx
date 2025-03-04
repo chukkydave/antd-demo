@@ -47,16 +47,24 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
             try {
                 setIsLoading(true);
                 const data = await currencyService.getRates();
-                // Transform API response to match our CurrencyRate interface
+
+                // Add a check for data structure
                 const transformedRates: CurrencyRate = {
                     USD: 1,
                     NGN: 1700, // Default fallback
-                    ...Object.fromEntries(
-                        data.map((rate: { short_name: string; value: number }) =>
-                            [rate.short_name, rate.value]
-                        )
-                    )
                 };
+
+                // Check if data is an array before mapping
+                if (Array.isArray(data)) {
+                    data.forEach((rate: { short_name: string; value: number }) => {
+                        if (rate.short_name in transformedRates) {
+                            transformedRates[rate.short_name as keyof CurrencyRate] = rate.value;
+                        }
+                    });
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+
                 setRates(transformedRates);
                 setError(null);
             } catch (error) {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASEURL = 'https://api.ogabassey.com';
+export const BASEURL = 'https://test-api.ogabassey.com';
 
 export const api = axios.create({
     baseURL: BASEURL,

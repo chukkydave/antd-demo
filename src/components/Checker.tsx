@@ -30,7 +30,7 @@ function Checker() {
     const router = useRouter();
     const { user } = useAuth();
     const { activeService, setActiveService } = useService();
-    const { convertPrice, currentCurrency, setCurrentCurrency } = useCurrency();
+    const { convertPrice, currentCurrency, setCurrentCurrency, rates } = useCurrency();
 
     const [selectedService, setSelectedService] = useState<string>("0");
     const [imei, setImei] = useState('');
@@ -181,7 +181,9 @@ function Checker() {
         const selectedServiceData = services.find(service => service.service === selectedService);
 
         if (selectedServiceData && selectedServiceData.price !== '0.00') {
-            setSelectedPrice(parseFloat(selectedServiceData.price));
+            // Price from API is in USD
+            const usdPrice = parseFloat(selectedServiceData.price);
+            setSelectedPrice(usdPrice);
             setShowPaymentModal(true);
             return;
         }
@@ -239,13 +241,16 @@ function Checker() {
 
     const handlePaymentSuccess = () => {
         setProcessingPayment(true);
-        // Payment confirmation will be handled by webhook
-        // Show loading state until webhook confirms payment
+        // Simplified payment confirmation
         Modal.info({
             title: 'Processing Payment',
             content: 'Please wait while we confirm your payment...',
             closable: false
         });
+
+        // You might want to add direct Paystack verification here
+        // instead of waiting for webhook
+        handlePaymentConfirmation();
     };
 
     // This would be called by a global event listener for payment confirmation
@@ -311,7 +316,15 @@ function Checker() {
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
                 amount={selectedPrice || 0}
-                service={selectedService}
+                service={{
+                    id: selectedService,
+                    name: services.find(s => s.service === selectedService)?.name || '',
+                    price: {
+                        // Price from API is in USD, convert to NGN for NGN display
+                        USD: parseFloat(services.find(s => s.service === selectedService)?.price || '0'),
+                        NGN: parseFloat(services.find(s => s.service === selectedService)?.price || '0') * rates.NGN
+                    }
+                }}
                 imei={imei}
                 onSuccess={handlePaymentSuccess}
             />

@@ -3,8 +3,9 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value;
+    const adminToken = request.cookies.get('admin_token')?.value;
 
-    // Define auth pages (using exact path matching)
+    // Define auth pages
     const isAuthPage = request.nextUrl.pathname === '/login' ||
         request.nextUrl.pathname === '/register' ||
         request.nextUrl.pathname === '/forgot-password';
@@ -23,6 +24,15 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    // Check if it's an admin route (excluding login)
+    if (request.nextUrl.pathname.startsWith('/admin') &&
+        request.nextUrl.pathname !== '/admin/login') {
+        // If no admin token, redirect to admin login
+        if (!adminToken) {
+            return NextResponse.redirect(new URL('/admin/login', request.url));
+        }
+    }
+
     return NextResponse.next();
 }
 
@@ -32,6 +42,7 @@ export const config = {
         '/dashboard',
         '/login',
         '/register',
-        '/forgot-password'
+        '/forgot-password',
+        '/admin/:path*'
     ]
 }; 

@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from 'react-hot-toast';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import ClientLoader from '@/components/ClientLoader';
+import { Providers } from './providers';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,13 +35,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#FAFAFA]`}
       >
         <Toaster position="top-right" />
-        <CurrencyProvider>
-          <AuthProvider>
-            <ClientLoader>
-              {children}
-            </ClientLoader>
-          </AuthProvider>
-        </CurrencyProvider>
+        <Providers>
+          <CurrencyProvider>
+            <AuthProvider>
+              <ClientLoader>
+                {children}
+              </ClientLoader>
+            </AuthProvider>
+          </CurrencyProvider>
+        </Providers>
       </body>
     </html>
   );

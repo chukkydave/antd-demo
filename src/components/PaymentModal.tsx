@@ -1,363 +1,96 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Modal, Tabs, Button, Select } from 'antd';
-import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
-import QRCode from 'react-qr-code';
-import { usePaystackPayment } from 'react-paystack';
-import { juicePaymentService } from '../services/juiceApi';
-import { toast } from 'react-hot-toast';
-import { isUnlockService } from '@/utils/serviceHelpers';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import { Country, State, City } from 'country-state-city';
+import { Modal, Button } from 'antd';
+import { useState } from 'react';
+import { useWallet } from '@/contexts/WalletContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import InsufficientFundsModal from './InsufficientFundsModal';
+import { message } from 'antd';
+import { walletService } from '@/services/walletService';
 
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
     amount: number;
-    service: string;
+    service: {
+        id: string;
+        name: string;
+        price: {
+            NGN: number;
+            USD: number;
+        };
+    };
     onSuccess: () => void;
     imei: string;
 }
 
 const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: PaymentModalProps) => {
-    const [activeTab, setActiveTab] = useState('1');
-    const [copied, setCopied] = useState(false);
-    const [binanceFormData, setBinanceFormData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone_number: '',
-        address_line1: '',
-        city: '',
-        state: '',
-        country: '',
-        zip_code: ''
-    });
-    const [countries, setCountries] = useState<any[]>([]);
-    const [states, setStates] = useState<any[]>([]);
-    const [cities, setCities] = useState<any[]>([]);
-    const [walletAddress, setWalletAddress] = useState('');
+    const { balance, refetchBalance } = useWallet();
+    const { currentCurrency, rates } = useCurrency();
+    const [showFundingModal, setShowFundingModal] = useState(false);
 
-    // Paystack configuration
-    const config = {
-        reference: new Date().getTime().toString(),
-        email: "user@example.com", // This should come from user context
-        amount: amount * 100, // Convert to kobo
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-    };
+    // Get the amount in the current currency based on the selected currency
+    const displayAmount = currentCurrency === 'USD'
+        ? service.price.USD
+        : service.price.NGN;
 
-    const initializePayment = usePaystackPayment(config);
+    const handlePayment = async () => {
+        // Explicitly refresh balance before checking
+        await refetchBalance();
 
-    useEffect(() => {
-        setCountries(Country.getAllCountries());
-    }, []);
+        // Check if user has sufficient balance
+        if (parseFloat(balance) < displayAmount) {
+            setShowFundingModal(true);
+            return;
+        }
 
-    const handleCountryChange = (value: string) => {
-        setBinanceFormData(prev => ({ ...prev, country: value, state: '', city: '' }));
-        setStates(State.getStatesOfCountry(value));
-        setCities([]);
-    };
-
-    const handleStateChange = (value: string) => {
-        setBinanceFormData(prev => ({ ...prev, state: value, city: '' }));
-        setCities(City.getCitiesOfState(binanceFormData.country, value));
-    };
-
-    const handlePaystackSuccess = () => {
-        onSuccess();
-        onClose();
-    };
-
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(walletAddress);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    const handleBinanceFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setBinanceFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleBinancePayment = async () => {
+        // Process payment with existing balance
         try {
-            // Validate form data
-            const requiredFields = Object.entries(binanceFormData);
-            const emptyFields = requiredFields.filter(([_, value]) => !value.trim());
-
-            if (emptyFields.length > 0) {
-                toast.error('Please fill in all fields');
-                return;
-            }
-
-            // Show loading state
-            toast.loading('Processing payment...', { id: 'payment' });
-
-            const session = await juicePaymentService.createPaymentSession({
-                customer: {
-                    first_name: binanceFormData.first_name,
-                    last_name: binanceFormData.last_name,
-                    email: binanceFormData.email,
-                    phone_number: binanceFormData.phone_number,
-                    billing_address: {
-                        line1: binanceFormData.address_line1,
-                        city: binanceFormData.city,
-                        state: binanceFormData.state,
-                        country: binanceFormData.country,
-                        zip_code: binanceFormData.zip_code
-                    }
-                },
-                description: `Payment for service: ${service}`,
-                currency: "USD",
-                amount: amount * 100,
-                reference: `REF-${Date.now()}`,
-                payment_method: {
-                    type: "crypto_address"
-                },
-                metadata: {
-                    order: {
-                        identifier: imei,
-                        items: [{
-                            name: `service: ${service}`,
-                            type: "digital",
-                        }]
-                    }
-                }
-            });
-
-            const payment = await juicePaymentService.capturePayment(session.data.payment.id, {
-                crypto_address: {
-                    chain: "USDC",
-                    currency: "USDT"
-                }
-            });
-
-            if (payment.data.payment.payment_method.address) {
-                // Show the crypto address to the user
-                setWalletAddress(payment.data.payment.payment_method.address);
-                setActiveTab('3'); // Switch to crypto payment tab
-                toast.success('Please complete the payment using the provided address', { id: 'payment' });
-            }
+            await walletService.deductBalance(displayAmount, currentCurrency as 'NGN' | 'USD');
+            onSuccess();
+            onClose();
         } catch (error) {
-            console.error('Payment Error:', error);
-            toast.error('Failed to initialize payment', { id: 'payment' });
+            message.error('Payment failed');
         }
     };
 
-    // Update the Binance Pay tab content
-    const binancePayContent = (
-        <div className="py-4">
-            <div className="mb-4">
-                <p className="text-lg font-medium mb-2">Pay ${amount} via Binance Pay</p>
-                <p className="text-sm text-gray-600 mb-4">Note: Binance Pay only accepts USD payments</p>
-            </div>
-
-            <form className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="First Name"
-                        value={binanceFormData.first_name}
-                        onChange={handleBinanceFormChange}
-                        className="p-2 border rounded"
-                    />
-                    <input
-                        type="text"
-                        name="last_name"
-                        placeholder="Last Name"
-                        value={binanceFormData.last_name}
-                        onChange={handleBinanceFormChange}
-                        className="p-2 border rounded"
-                    />
-                </div>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={binanceFormData.email}
-                    onChange={handleBinanceFormChange}
-                    className="w-full p-2 border rounded"
-                />
-                <PhoneInput
-                    country={'us'}
-                    value={binanceFormData.phone_number}
-                    onChange={(phone) => {
-                        setBinanceFormData(prev => ({
-                            ...prev,
-                            phone_number: phone
-                        }));
-                    }}
-                    containerClass="w-full"
-                    inputClass="w-full p-2 border rounded"
-                />
-                <input
-                    type="text"
-                    name="address_line1"
-                    placeholder="Address"
-                    value={binanceFormData.address_line1}
-                    onChange={handleBinanceFormChange}
-                    className="w-full p-2 border rounded"
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-
-                    <Select
-                        className="w-full !rounded-none"
-                        placeholder="Select Country"
-                        value={binanceFormData.country || undefined}
-                        onChange={(value) => {
-                            setBinanceFormData(prev => ({
-                                ...prev,
-                                country: value,
-                                state: '',
-                                city: ''
-                            }));
-                            setStates(State.getStatesOfCountry(value));
-                            setCities([]);
-                        }}
-                        options={countries.map(country => ({
-                            value: country.isoCode,
-                            label: country.name
-                        }))}
-                        showSearch
-                        filterOption={(input, option) =>
-                            option?.label.toLowerCase().includes(input.toLowerCase())
-                        }
-                    />
-                    <Select
-                        placeholder="Select State"
-                        value={binanceFormData.state || undefined}
-                        onChange={(value) => {
-                            setBinanceFormData(prev => ({
-                                ...prev,
-                                state: value,
-                                city: ''
-                            }));
-                            setCities(City.getCitiesOfState(binanceFormData.country, value));
-                        }}
-                        options={states.map(state => ({
-                            value: state.isoCode,
-                            label: state.name
-                        }))}
-                        disabled={!binanceFormData.country}
-                        showSearch
-                        filterOption={(input, option) =>
-                            option?.label.toLowerCase().includes(input.toLowerCase())
-                        }
-                    />
-
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-
-                    <Select
-                        placeholder="Select City"
-                        value={binanceFormData.city || undefined}
-                        onChange={(value) => setBinanceFormData(prev => ({ ...prev, city: value }))}
-                        options={cities.map(city => ({
-                            value: city.name,
-                            label: city.name
-                        }))}
-                        disabled={!binanceFormData.state}
-                        className="w-full rounded"
-                        showSearch
-                        filterOption={(input, option) =>
-                            option?.label.toLowerCase().includes(input.toLowerCase())
-                        }
-                    />
-                    <input
-                        type="text"
-                        name="zip_code"
-                        placeholder="ZIP/Postal Code"
-                        value={binanceFormData.zip_code}
-                        onChange={handleBinanceFormChange}
-                        className="w-full p-2 border rounded"
-                    />
-                </div>
-                <Button
-                    type="primary"
-                    className="w-full bg-[#F0B90B] hover:bg-[#DCA70A] border-none h-12 text-lg font-medium"
-                    onClick={handleBinancePayment}
-                >
-                    Pay with Binance
-                </Button>
-            </form>
-        </div>
-    );
+    // Format the currency display
+    const formatCurrency = (amount: number) => {
+        const symbol = currentCurrency === 'NGN' ? '₦' : '$';
+        return `${symbol}${amount.toFixed(2)}`;
+    };
 
     return (
-        <Modal
-            open={isOpen}
-            onCancel={onClose}
-            footer={null}
-            title="Choose Payment Method"
-            width={600} // Increased width to accommodate the form
-        >
-            <Tabs
-                activeKey={activeTab}
-                onChange={setActiveTab}
-                items={[
-                    {
-                        key: '1',
-                        label: 'Card Payment',
-                        children: (
-                            <div className="py-4">
-                                <p className="mb-4">Pay ${amount} via Paystack</p>
-                                <Button
-                                    type="primary"
-                                    className="w-full bg-[#0BA4DB] hover:bg-[#0993C5] border-none h-12 text-lg font-medium"
-                                    onClick={() => initializePayment({
-                                        onSuccess: handlePaystackSuccess,
-                                        onClose: onClose
-                                    })}
-                                >
-                                    Pay with Paystack
-                                </Button>
-                            </div>
-                        ),
-                    },
-                    {
-                        key: '2',
-                        label: 'Binance Pay',
-                        children: binancePayContent
-                    },
-                    {
-                        key: '3',
-                        label: 'Crypto Payment',
-                        children: (
-                            <div className="py-4 flex flex-col items-center">
-                                <QRCode value={walletAddress} size={200} />
-                                <div className="mt-4 w-full">
-                                    <div className="flex items-center gap-2 p-2 border rounded">
-                                        <input
-                                            type="text"
-                                            value={walletAddress}
-                                            readOnly
-                                            className="flex-1 outline-none"
-                                        />
-                                        <Button
-                                            icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                                            onClick={copyToClipboard}
-                                            className={copied ? 'text-green-500' : ''}
-                                        >
-                                            {copied ? 'Copied!' : 'Copy'}
-                                        </Button>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mt-2">
-                                        - After transfer contact us by clicking on the whatsapp icon to confirm payment.
-                                    </p>
-                                </div>
-                            </div>
-                        ),
-                    },
-                ]}
+        <>
+            <Modal
+                open={isOpen}
+                onCancel={onClose}
+                footer={null}
+                title="Confirm Payment"
+            >
+                <div className="py-4">
+                    <p className="mb-4">
+                        Pay {formatCurrency(displayAmount)} for {service.name}
+                    </p>
+
+                    <Button
+                        type="primary"
+                        onClick={handlePayment}
+                        className="w-full bg-[#D62027] hover:bg-[#B91C22]"
+                    >
+                        Pay Now
+                    </Button>
+                </div>
+            </Modal>
+
+            <InsufficientFundsModal
+                isOpen={showFundingModal}
+                onClose={() => setShowFundingModal(false)}
+                requiredAmount={displayAmount}
+                currency={currentCurrency as 'NGN' | 'USD'}
+                onSuccess={handlePayment}
             />
-        </Modal>
+        </>
     );
 };
 

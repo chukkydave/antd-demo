@@ -74,6 +74,7 @@ const LoginForm = () => {
 
             if (response.data.data.token) {
                 const { token, user } = response.data.data;
+                // login(token, user);
                 login(token, user);
                 toast.success('Login successful');
                 router.push('/');

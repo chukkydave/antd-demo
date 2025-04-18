@@ -20,6 +20,7 @@ import ContactForm from './ContactForm';
 import { IoLogInOutline } from "react-icons/io5";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
+import ReactCountryFlag from 'react-country-flag';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();

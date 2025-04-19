@@ -1,8 +1,8 @@
 'use client';
 
-import { Modal, Button, Tabs, type TabsProps } from 'antd';
+import { Modal, Button, Tabs } from 'antd';
 import { usePaystackPayment } from 'react-paystack';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { walletService } from '@/services/walletService';
 import { useWallet } from '@/contexts/WalletContext';
@@ -16,6 +16,11 @@ interface InsufficientFundsModalProps {
     requiredAmount: number;
     currency: 'NGN' | 'USD';
     onSuccess: () => void;
+}
+
+interface PaystackResponse {
+    reference: string;
+    [key: string]: unknown;
 }
 
 export default function InsufficientFundsModal({
@@ -46,7 +51,7 @@ export default function InsufficientFundsModal({
 
     const initializePayment = usePaystackPayment(config);
 
-    const handlePaystackSuccess = async (response: any) => {
+    const handlePaystackSuccess = async (response: PaystackResponse) => {
         setLoading(true);
         try {
             await walletService.fundNGN({
@@ -57,8 +62,10 @@ export default function InsufficientFundsModal({
             await refetchBalance();
             onSuccess();
             onClose();
-        } catch (error: any) {
-            message.error(error.response?.data?.message || 'Failed to fund wallet');
+        } catch (error) {
+            console.log(error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fund wallet';
+            message.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -70,7 +77,9 @@ export default function InsufficientFundsModal({
             const response = await walletService.fundUSD(usdAmount);
             setWalletAddress(response.address);
             message.success('Please complete the payment using the provided address');
-        } catch (error: any) {
+
+        } catch (error) {
+            console.log(error);
             message.error('Failed to generate payment address');
         } finally {
             setLoading(false);

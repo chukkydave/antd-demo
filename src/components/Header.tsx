@@ -3,24 +3,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import Logo from "../assets/Ogabassey-103.png";
 import LogoWhite from "../assets/Ogabassey-dark.png";
-import flag from "../assets/us_flag.png";
 import Image from "next/image";
-import { FaClockRotateLeft } from "react-icons/fa6";
 import { FaEnvelope } from "react-icons/fa";
 import { RiDashboardFill } from "react-icons/ri";
-import { UserOutlined, DownOutlined, LogoutOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
+import { UserOutlined, DownOutlined, LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import { BiSolidBolt } from "react-icons/bi";
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import AlertMessage from './AlertMessage';
-import ContactPopover from './ContactPopover';
 import CurrencySelector from './CurrencySelector';
 import { Popover } from 'antd';
 import ContactForm from './ContactForm';
 import { IoLogInOutline } from "react-icons/io5";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import { useAuth } from "@/contexts/AuthContext";
-import ReactCountryFlag from 'react-country-flag';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();

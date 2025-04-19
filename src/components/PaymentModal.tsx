@@ -24,9 +24,9 @@ interface PaymentModalProps {
     imei: string;
 }
 
-const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: PaymentModalProps) => {
+const PaymentModal = ({ isOpen, onClose, service, onSuccess }: PaymentModalProps) => {
     const { balance, refetchBalance } = useWallet();
-    const { currentCurrency, rates } = useCurrency();
+    const { currentCurrency } = useCurrency();
     const [showFundingModal, setShowFundingModal] = useState(false);
 
     // Get the amount in the current currency based on the selected currency
@@ -50,6 +50,7 @@ const PaymentModal = ({ isOpen, onClose, amount, service, onSuccess, imei }: Pay
             onSuccess();
             onClose();
         } catch (error) {
+            console.log(error);
             message.error('Payment failed');
         }
     };

@@ -26,6 +26,7 @@ const ContactForm = ({ onSubmit }: ContactFormProps) => {
             form.resetFields();
             onSubmit?.();
         } catch (error) {
+            console.log(error);
             message.error('Failed to send message. Please try again.');
         } finally {
             setLoading(false);

@@ -25,9 +25,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         queryFn: async () => {
             try {
                 return await walletService.getBalance();
-            } catch (error: any) {
+            } catch (error: unknown) {
                 // If unauthorized, just return null instead of redirecting
-                if (error.response?.status === 401) {
+                const apiError = error as { response?: { status: number } };
+                if (apiError.response?.status === 401) {
                     logout(); // Clear auth state but don't redirect
                     return null;
                 }

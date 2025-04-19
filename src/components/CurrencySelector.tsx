@@ -76,6 +76,7 @@ const CurrencySelector = ({ className }: { className?: string }) => {
     };
 
     const getWalletBalance = (currencyCode: string) => {
+        console.log(currencyCode);
         if (!isAuthenticated) return '0.00';
         if (walletLoading) return '...';
         return parseFloat(balance).toFixed(2);

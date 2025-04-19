@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from "next-auth/react";
 import Link from 'next/link';
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { api } from '../lib/api';

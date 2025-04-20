@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '@/lib/api';
 import Cookies from 'js-cookie';
 
 interface User {

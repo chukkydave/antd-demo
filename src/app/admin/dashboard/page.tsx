@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Input, Button, Card, Spin, Alert } from 'antd';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { CurrencyRate } from '@/contexts/CurrencyContext';
 
 export default function AdminDashboard() {

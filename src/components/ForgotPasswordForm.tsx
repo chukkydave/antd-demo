@@ -8,7 +8,8 @@ const ForgotPasswordForm = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    const onFinish = async (values: any) => {
+    const onFinish = async () => {
+
         setLoading(true);
         try {
             // API call here

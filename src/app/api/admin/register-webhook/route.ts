@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 
-export async function POST(request: Request) {
+export async function POST() {
     try {
         // Verify admin authentication
         const session = await getServerSession();

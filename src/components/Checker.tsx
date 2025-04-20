@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Input, Button, Modal, Spin, message } from 'antd';
+import { Input, Button, Modal } from 'antd';
 import { IoCamera } from "react-icons/io5";
-import { checkerOptions, unlockOptions, formatOptionLabel } from '../data/checkerOptions';
+import { unlockOptions } from '../data/checkerOptions';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import DeviceInfoModal from './DeviceInfoModal';
-import PaymentModal from './PaymentModal';
 import ServiceToggle from './ServiceToggle';
 import { useService } from '@/contexts/ServiceContext';
 import { useRouter } from 'next/navigation';
@@ -30,7 +28,7 @@ function Checker() {
     const router = useRouter();
     const { user } = useAuth();
     const { activeService, setActiveService } = useService();
-    const { convertPrice, currentCurrency, setCurrentCurrency } = useCurrency();
+    const { convertPrice, setCurrentCurrency, rates } = useCurrency();
 
     const [selectedService, setSelectedService] = useState<string>("0");
     const [imei, setImei] = useState('');
@@ -41,10 +39,7 @@ function Checker() {
     const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
     const [services, setServices] = useState<any[]>([]);
     const [servicesLoading, setServicesLoading] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
     const [showResult, setShowResult] = useState(false);
-    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-    const [processingPayment, setProcessingPayment] = useState(false);
 
     useEffect(() => {
         fetchServices();
@@ -68,7 +63,6 @@ function Checker() {
     };
 
     const detectUserCurrency = async () => {
-        setIsLoading(true);
         try {
             const response = await fetch('https://ipapi.co/currency/');
             const detectedCurrency = await response.text();
@@ -82,8 +76,6 @@ function Checker() {
         } catch (error) {
             console.error('Failed to detect currency:', error);
             setCurrentCurrency('USD'); // Default to USD on error
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -146,11 +138,7 @@ function Checker() {
         return activeService === 'checker' ? "Check" : "Unlock";
     };
 
-    const getDescriptionText = () => {
-        return activeService === 'checker'
-            ? "Use our trusted IMEI checker to ensure your phone is legitimate and not blacklisted."
-            : "Unlock your device with our reliable unlocking service.";
-    };
+
 
     // Dynamically import modals
     const DeviceInfoModalComponent = dynamic(() => import('./DeviceInfoModal'), {
@@ -181,7 +169,9 @@ function Checker() {
         const selectedServiceData = services.find(service => service.service === selectedService);
 
         if (selectedServiceData && selectedServiceData.price !== '0.00') {
-            setSelectedPrice(parseFloat(selectedServiceData.price));
+            // Price from API is in USD
+            const usdPrice = parseFloat(selectedServiceData.price);
+            setSelectedPrice(usdPrice);
             setShowPaymentModal(true);
             return;
         }
@@ -197,7 +187,7 @@ function Checker() {
                     imei,
                     service: selectedService
                 });
-
+                console.log(response);
                 Modal.success({
                     title: 'Unlock Request Submitted',
                     content: 'Please check your dashboard in 2-3 days for updates on your unlock status.',
@@ -238,19 +228,20 @@ function Checker() {
     };
 
     const handlePaymentSuccess = () => {
-        setProcessingPayment(true);
-        // Payment confirmation will be handled by webhook
-        // Show loading state until webhook confirms payment
+        // Simplified payment confirmation
         Modal.info({
             title: 'Processing Payment',
             content: 'Please wait while we confirm your payment...',
             closable: false
         });
+
+        // You might want to add direct Paystack verification here
+        // instead of waiting for webhook
+        handlePaymentConfirmation();
     };
 
     // This would be called by a global event listener for payment confirmation
     const handlePaymentConfirmation = () => {
-        setProcessingPayment(false);
         Modal.destroyAll(); // Clear the processing modal
 
         if (activeService === 'unlock') {
@@ -311,7 +302,15 @@ function Checker() {
                 isOpen={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
                 amount={selectedPrice || 0}
-                service={selectedService}
+                service={{
+                    id: selectedService,
+                    name: services.find(s => s.service === selectedService)?.name || '',
+                    price: {
+                        // Price from API is in USD, convert to NGN for NGN display
+                        USD: parseFloat(services.find(s => s.service === selectedService)?.price || '0'),
+                        NGN: parseFloat(services.find(s => s.service === selectedService)?.price || '0') * rates.NGN
+                    }
+                }}
                 imei={imei}
                 onSuccess={handlePaymentSuccess}
             />

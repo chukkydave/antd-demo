@@ -2,7 +2,6 @@
 
 import HistoryList from '@/components/HistoryList';
 import { IoSearchOutline } from "react-icons/io5";
-import { IoCalendarOutline } from "react-icons/io5";
 import { useState } from 'react';
 
 type TabType = 'All' | 'Pending' | 'Completed' | 'Rejected';

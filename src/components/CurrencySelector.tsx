@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactCountryFlag from 'react-country-flag';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useWallet } from '@/contexts/WalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Currency {
     code: string;
@@ -13,8 +15,6 @@ interface Currency {
 
 const currencies: Currency[] = [
     { code: 'USD', symbol: '$', countryCode: 'US', name: 'US Dollar' },
-    // { code: 'GBP', symbol: '£', countryCode: 'GB', name: 'British Pound' },
-    // { code: 'EUR', symbol: '€', countryCode: 'EU', name: 'Euro' },
     { code: 'NGN', symbol: '₦', countryCode: 'NG', name: 'Nigerian Naira' },
 ];
 
@@ -23,6 +23,8 @@ const CurrencySelector = ({ className }: { className?: string }) => {
     const [isLoading, setIsLoading] = useState(true);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { currentCurrency, setCurrentCurrency } = useCurrency();
+    const { balance, isLoading: walletLoading } = useWallet();
+    const { isAuthenticated } = useAuth();
 
     const selectedCurrency = currencies.find(c => c.code === currentCurrency) || currencies[0];
 
@@ -73,6 +75,13 @@ const CurrencySelector = ({ className }: { className?: string }) => {
         setShowDropdown(false);
     };
 
+    const getWalletBalance = (currencyCode: string) => {
+        console.log(currencyCode);
+        if (!isAuthenticated) return '0.00';
+        if (walletLoading) return '...';
+        return parseFloat(balance).toFixed(2);
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center gap-2 px-3 py-2">
@@ -89,7 +98,9 @@ const CurrencySelector = ({ className }: { className?: string }) => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-md transition-colors"
             >
-                <span className={className}>{selectedCurrency.symbol}0.00</span>
+                <span className={className}>
+                    {selectedCurrency.symbol}{getWalletBalance(selectedCurrency.code)}
+                </span>
                 <div className='rounded-full w-6 h-6 overflow-hidden flex items-center justify-center'>
                     <ReactCountryFlag
                         countryCode={selectedCurrency.countryCode}
@@ -124,7 +135,9 @@ const CurrencySelector = ({ className }: { className?: string }) => {
                                 />
                             </div>
                             <span>{currency.name}</span>
-                            <span className="ml-auto">{currency.symbol}</span>
+                            <span className="ml-auto">
+                                {currency.symbol}{getWalletBalance(currency.code)}
+                            </span>
                         </button>
                     ))}
                 </div>

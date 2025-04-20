@@ -1,52 +1,61 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, message } from 'antd';
+import { Input, Button, Form, message } from 'antd';
 
-const AdminWebhookSetup = () => {
-    const [isRegistering, setIsRegistering] = useState(false);
+export default function AdminWebhookSetup() {
+    const [loading, setLoading] = useState(false);
 
-    const handleRegisterWebhook = async () => {
-        setIsRegistering(true);
+    const handleSubmit = async (values: { webhook_url: string }) => {
+        setLoading(true);
         try {
             const response = await fetch('/api/admin/register-webhook', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: values.webhook_url }),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to register webhook');
+            if (response.ok) {
+                message.success('Webhook URL registered successfully');
+            } else {
+                message.error('Failed to register webhook URL');
             }
-
-            const data = await response.json();
-            if (data.success) {
-                message.success('Webhook registered successfully');
-            }
-        } catch (error) {
-            console.error('Webhook registration error:', error);
-            message.error('Failed to register webhook');
+        } catch (_error) {
+            message.error('An error occurred');
         } finally {
-            setIsRegistering(false);
+            setLoading(false);
         }
     };
 
     return (
-        <div className="p-4">
+        <div className="p-6">
             <h2 className="text-xl font-semibold mb-4">Webhook Configuration</h2>
-            <div className="space-y-4">
-                <p className="text-gray-600">
-                    Register the webhook endpoint to receive payment notifications from Juice.
-                </p>
-                <Button
-                    type="primary"
-                    onClick={handleRegisterWebhook}
-                    loading={isRegistering}
-                    className="bg-blue-600 hover:bg-blue-700"
+            <p className="text-gray-600 mb-4">
+                Configure a webhook URL to receive notifications for payment events.
+            </p>
+
+            <Form layout="vertical" onFinish={handleSubmit}>
+                <Form.Item
+                    name="webhook_url"
+                    label="Webhook URL"
+                    rules={[{ required: true, message: 'Webhook URL is required' }]}
                 >
-                    Register Webhook
-                </Button>
-            </div>
+                    <Input placeholder="https://your-server.com/webhook" />
+                </Form.Item>
+
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={loading}
+                        className="bg-[#D62027] hover:bg-[#B91C22]"
+                    >
+                        Save Webhook URL
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
     );
-};
-
-export default AdminWebhookSetup; 
+} 

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from "next-auth/react";
 import Link from 'next/link';
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { api } from '../lib/api';
@@ -74,6 +73,7 @@ const LoginForm = () => {
 
             if (response.data.data.token) {
                 const { token, user } = response.data.data;
+                // login(token, user);
                 login(token, user);
                 toast.success('Login successful');
                 router.push('/');

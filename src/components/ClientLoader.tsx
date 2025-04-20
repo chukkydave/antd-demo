@@ -19,7 +19,7 @@ export default function ClientLoader({ children }: { children: React.ReactNode }
             }, remainingTime);
         };
 
-        // Wait for both document and styles to be ready
+        // Wait for document and fonts to be ready
         Promise.all([
             // Wait for document
             new Promise(resolve => {
@@ -29,28 +29,18 @@ export default function ClientLoader({ children }: { children: React.ReactNode }
                     window.addEventListener('load', () => resolve(true), { once: true });
                 }
             }),
-            // Wait for Antd styles
-            new Promise(resolve => {
-                const checkStyles = () => {
-                    // Check if Antd styles are loaded by looking for a common Antd class
-                    const antdStylesLoaded = document.querySelector('.ant-btn') !== null ||
-                        document.querySelector('.ant-input') !== null ||
-                        document.querySelector('.ant-select') !== null;
-
-                    if (antdStylesLoaded) {
-                        resolve(true);
-                    } else {
-                        // Check again in a short interval
-                        setTimeout(checkStyles, 50);
-                    }
-                };
-                checkStyles();
-            }),
             // Wait for fonts
             document.fonts.ready
         ]).then(hideLoader);
 
-        return () => { };
+        // Fallback timeout to prevent infinite loading
+        const fallbackTimeout = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000); // 3 seconds maximum loading time
+
+        return () => {
+            clearTimeout(fallbackTimeout);
+        };
     }, []);
 
     return (

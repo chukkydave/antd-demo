@@ -2,7 +2,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 
 const MERCHANT_ID = process.env.NEXT_PUBLIC_CRYPTOMUS_MERCHANT_ID;
-const PAYMENT_KEY = process.env.CRYPTOMUS_PAYMENT_KEY;
+const PAYMENT_KEY = process.env.NEXT_CRYPTOMUS_PAYMENT_KEY;
 
 const generateSign = (payload: any) => {
     const sortedParams = Object.keys(payload)

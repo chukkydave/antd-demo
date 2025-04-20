@@ -76,7 +76,6 @@ function Checker() {
         } catch (error) {
             console.error('Failed to detect currency:', error);
             setCurrentCurrency('USD'); // Default to USD on error
-        } finally {
         }
     };
 

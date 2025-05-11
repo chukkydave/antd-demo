@@ -45,7 +45,6 @@ export default function InsufficientFundsModal({
         reference: new Date().getTime().toString(),
         email: user?.email || '',
         amount: ngnAmount * 100, // Convert to kobo
-        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
     };
 

@@ -24,7 +24,7 @@ export default function NGNFundingModal({ isOpen, onClose }: NGNFundingModalProp
         reference: new Date().getTime().toString(),
         email: user?.email || '', // Use user's email from auth context
         amount: parseFloat(amount) * 100, // Convert to kobo
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
     };
 
     const initializePayment = usePaystackPayment(config);

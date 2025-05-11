@@ -5,13 +5,14 @@ const MERCHANT_ID = process.env.NEXT_PUBLIC_CRYPTOMUS_MERCHANT_ID;
 const PAYMENT_KEY = process.env.NEXT_CRYPTOMUS_PAYMENT_KEY;
 
 const generateSign = (payload: any) => {
-    const sortedParams = Object.keys(payload)
-        .sort()
-        .reduce((acc, key) => ({ ...acc, [key]: payload[key] }), {});
-
+    // Convert payload to JSON string
+    const jsonString = JSON.stringify(payload);
+    // Encode to base64
+    const base64String = Buffer.from(jsonString).toString('base64');
+    // Create MD5 hash of base64 string + API key
     return crypto
         .createHash('md5')
-        .update(Buffer.from(JSON.stringify(sortedParams)).toString('base64') + PAYMENT_KEY)
+        .update(base64String + PAYMENT_KEY)
         .digest('hex');
 };
 

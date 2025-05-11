@@ -19,12 +19,12 @@ export async function POST(request: Request) {
     try {
         const { amount, currency, network } = await request.json();
 
+        // Create payload matching Cryptomus documentation
         const payload = {
-            merchant_id: MERCHANT_ID,
             amount: amount,
             currency: currency,
-            network: network,
             order_id: Date.now().toString(),
+            network: network // Optional parameter for specific network
         };
 
         const response = await fetch('https://api.cryptomus.com/v1/payment', {

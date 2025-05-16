@@ -56,8 +56,8 @@ export const walletService = {
         // Create Cryptomus payment session
         const payment = await cryptomusService.createPayment({
             amount: amount.toString(),
-            currency: 'USD',
-            network: 'USDT', // or other supported networks
+            currency: 'USDT',
+            network: 'ETH', // or other supported networks
         });
         return payment;
     },

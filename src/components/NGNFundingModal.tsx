@@ -7,6 +7,7 @@ import { walletService } from '@/services/walletService';
 import { useWallet } from '@/contexts/WalletContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { generatePaymentReference } from '@/utils/paymentUtils';
 
 interface NGNFundingModalProps {
     isOpen: boolean;
@@ -21,7 +22,7 @@ export default function NGNFundingModal({ isOpen, onClose }: NGNFundingModalProp
     const router = useRouter();
 
     const config = {
-        reference: new Date().getTime().toString(),
+        reference: generatePaymentReference('PAYSTACK'),
         email: user?.email || '', // Use user's email from auth context
         amount: parseFloat(amount) * 100, // Convert to kobo
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!

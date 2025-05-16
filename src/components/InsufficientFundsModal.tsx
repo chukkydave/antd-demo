@@ -9,6 +9,7 @@ import { useWallet } from '@/contexts/WalletContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import QRCode from 'react-qr-code';
 import { message } from 'antd';
+import { generatePaymentReference } from '@/utils/paymentUtils';
 
 interface InsufficientFundsModalProps {
     isOpen: boolean;
@@ -42,7 +43,7 @@ export default function InsufficientFundsModal({
     const usdAmount = currency === 'USD' ? requiredAmount : requiredAmount / rates.NGN;
 
     const config = {
-        reference: new Date().getTime().toString(),
+        reference: generatePaymentReference('PAYSTACK'),
         email: user?.email || '',
         amount: ngnAmount * 100, // Convert to kobo
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!

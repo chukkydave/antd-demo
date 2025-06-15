@@ -1,0 +1,44 @@
+Crypto Payment Flow - Best Practices
+====================================
+
+1. Initiate Payment & Show Payment Details
+------------------------------------------
+- User initiates a payment (e.g., to fund wallet or pay for a service).
+- Frontend calls backend to create a payment session (e.g., with Cryptomus).
+- Backend calls Cryptomus, receives payment details (address, QR code, amount, order_id, etc.).
+- Backend stores a new payment/order record in the database with status 'pending'.
+- Backend returns payment details to frontend.
+- Frontend displays payment address, QR code, amount, and payment link to the user.
+
+2. Wait for Payment Confirmation (Webhook)
+------------------------------------------
+- Backend exposes a webhook endpoint for Cryptomus to notify payment status changes.
+- When Cryptomus sends a webhook (e.g., payment completed), backend verifies the payment (amount, address, order_id, etc.).
+- Backend updates the payment/order record in the database to 'paid' or 'completed'.
+- Backend credits the user's wallet or marks the order as paid.
+- Optionally, backend notifies the user (email, in-app notification, etc.).
+
+3. Frontend Polling or Event Notification
+-----------------------------------------
+- After showing payment details, frontend polls the backend (e.g., /api/payment-status?order_id=...) every few seconds to check if payment is complete.
+- Alternatively, use websockets or server-sent events for real-time updates (advanced).
+- Once payment is confirmed, frontend continues the process (e.g., unlocks a feature, shows a success message, etc.).
+
+4. Security & Reliability
+-------------------------
+- Never trust only the frontend for payment confirmation.
+- Always rely on backend webhook and your own database records.
+- Handle edge cases: underpayment, overpayment, expired payment, etc.
+
+Example API Endpoints
+---------------------
+- POST /api/create-crypto-payment: Initiates payment, stores order, returns payment details.
+- POST /api/cryptomus/webhook: Receives payment status updates from Cryptomus, updates DB.
+- GET /api/payment-status?order_id=...: Returns current payment status for polling.
+
+Frontend Flow
+-------------
+1. User initiates payment.
+2. Show payment details (address, QR code, amount, link).
+3. Poll backend for payment status.
+4. When status is 'paid', continue app process (e.g., credit wallet, unlock service, show success). 

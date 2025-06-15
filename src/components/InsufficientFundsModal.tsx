@@ -2,7 +2,7 @@
 
 import { Modal, Button, Tabs } from 'antd';
 import { usePaystackPayment } from 'react-paystack';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { walletService } from '@/services/walletService';
 import { useWallet } from '@/contexts/WalletContext';
@@ -37,6 +37,11 @@ export default function InsufficientFundsModal({
     const { rates } = useCurrency();
     const [loading, setLoading] = useState(false);
     const [walletAddress, setWalletAddress] = useState('');
+    const [paymentUrl, setPaymentUrl] = useState('');
+    const [qrCode, setQrCode] = useState('');
+    const [orderId, setOrderId] = useState('');
+    const [polling, setPolling] = useState(false);
+    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
     // Calculate amounts in both currencies
     const ngnAmount = currency === 'NGN' ? requiredAmount : requiredAmount * rates.NGN;
@@ -45,7 +50,7 @@ export default function InsufficientFundsModal({
     const config = {
         reference: generatePaymentReference('PAYSTACK'),
         email: user?.email || '',
-        amount: ngnAmount * 100, // Convert to kobo
+        amount: ngnAmount * 100,
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
     };
 
@@ -75,9 +80,12 @@ export default function InsufficientFundsModal({
         setLoading(true);
         try {
             const response = await walletService.fundUSD(usdAmount);
-            setWalletAddress(response.address);
+            setWalletAddress(response.result.address);
+            setPaymentUrl(response.result.url);
+            setQrCode(response.result.address_qr_code);
+            setOrderId(response.result.order_id);
+            setPolling(true);
             message.success('Please complete the payment using the provided address');
-
         } catch (error) {
             console.log(error);
             message.error('Failed to generate payment address');
@@ -85,6 +93,31 @@ export default function InsufficientFundsModal({
             setLoading(false);
         }
     };
+
+    // Polling for payment status
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (polling && orderId && !paymentConfirmed) {
+            interval = setInterval(async () => {
+                try {
+                    // Replace with your actual payment status endpoint
+                    const res = await fetch(`/api/payment-status?order_id=${orderId}`);
+                    const data = await res.json();
+                    if (data.status === 'paid' || data.status === 'completed') {
+                        setPaymentConfirmed(true);
+                        setPolling(false);
+                        message.success('Payment confirmed!');
+                        await refetchBalance();
+                        onSuccess();
+                        onClose();
+                    }
+                } catch (err) {
+                    // Optionally handle polling errors
+                }
+            }, 5000); // Poll every 5 seconds
+        }
+        return () => clearInterval(interval);
+    }, [polling, orderId, paymentConfirmed, refetchBalance, onSuccess, onClose]);
 
     return (
         <Modal
@@ -129,7 +162,9 @@ export default function InsufficientFundsModal({
                                 <div className="py-4">
                                     {walletAddress ? (
                                         <div className="flex flex-col items-center">
-                                            <QRCode value={walletAddress} size={200} />
+                                            {qrCode && (
+                                                <img src={qrCode} alt="QR Code" style={{ width: 200, height: 200 }} />
+                                            )}
                                             <p className="mt-4 text-center text-sm">
                                                 Send ${usdAmount.toFixed(2)} USDT to:
                                                 <br />
@@ -137,6 +172,14 @@ export default function InsufficientFundsModal({
                                                     {walletAddress}
                                                 </code>
                                             </p>
+                                            {paymentUrl && (
+                                                <a href={paymentUrl} target="_blank" rel="noopener noreferrer" className="mt-2 text-blue-600 underline">
+                                                    Open Payment Page
+                                                </a>
+                                            )}
+                                            {paymentConfirmed && (
+                                                <div className="mt-4 text-green-600 font-bold">Payment Confirmed!</div>
+                                            )}
                                         </div>
                                     ) : (
                                         <Button

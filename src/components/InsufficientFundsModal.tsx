@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal, Button, Tabs } from 'antd';
-import { usePaystackPayment } from 'react-paystack';
+import { PaystackButton, usePaystackPayment } from 'react-paystack';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { walletService } from '@/services/walletService';
@@ -51,6 +51,7 @@ export default function InsufficientFundsModal({
         reference: generatePaymentReference('PAYSTACK'),
         email: user?.email || '',
         amount: ngnAmount * 100,
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
     };
 
@@ -58,32 +59,34 @@ export default function InsufficientFundsModal({
 
     const handlePaystackSuccess = async (response: PaystackResponse) => {
         setLoading(true);
-        try {
-            await walletService.fundNGN({
-                reference: response.reference,
-                amount: ngnAmount
-            });
-            message.success('Wallet funded successfully');
-            await refetchBalance();
-            onSuccess();
-            onClose();
-        } catch (error) {
-            console.log(error);
-            const errorMessage = error instanceof Error ? error.message : 'Failed to fund wallet';
-            message.error(errorMessage);
-        } finally {
-            setLoading(false);
-        }
+        console.log(response);
+        // try {
+        //     await walletService.fundNGN({
+        //         reference: response.reference,
+        //         amount: ngnAmount
+        //     });
+        //     message.success('Wallet funded successfully');
+        //     await refetchBalance();
+        //     onSuccess();
+        //     onClose();
+        // } catch (error) {
+        //     console.log(error);
+        //     const errorMessage = error instanceof Error ? error.message : 'Failed to fund wallet';
+        //     message.error(errorMessage);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     const handleCryptoPayment = async () => {
         setLoading(true);
         try {
             const response = await walletService.fundUSD(usdAmount);
-            setWalletAddress(response.result.address);
-            setPaymentUrl(response.result.url);
-            setQrCode(response.result.address_qr_code);
-            setOrderId(response.result.order_id);
+            // Use the backend's response structure
+            setWalletAddress(response.result.address || '');
+            setPaymentUrl(response.result.payment_url || '');
+            setQrCode(response.result.address_qr_code || '');
+            setOrderId(response.result.order_id || '');
             setPolling(true);
             message.success('Please complete the payment using the provided address');
         } catch (error) {
@@ -100,10 +103,8 @@ export default function InsufficientFundsModal({
         if (polling && orderId && !paymentConfirmed) {
             interval = setInterval(async () => {
                 try {
-                    // Replace with your actual payment status endpoint
-                    const res = await fetch(`/api/payment-status?order_id=${orderId}`);
-                    const data = await res.json();
-                    if (data.status === 'paid' || data.status === 'completed') {
+                    const paymentStatus = await walletService.getPaymentStatus(orderId);
+                    if (paymentStatus.status === 'paid') {
                         setPaymentConfirmed(true);
                         setPolling(false);
                         message.success('Payment confirmed!');
@@ -112,12 +113,28 @@ export default function InsufficientFundsModal({
                         onClose();
                     }
                 } catch (err) {
-                    // Optionally handle polling errors
+                    console.error('Error checking payment status:', err);
                 }
-            }, 5000); // Poll every 5 seconds
+            }, 10000); // Poll every 10 seconds as recommended
         }
         return () => clearInterval(interval);
     }, [polling, orderId, paymentConfirmed, refetchBalance, onSuccess, onClose]);
+
+    const paystackButtonComponentProps = {
+        email: user?.email || '',
+        amount: ngnAmount * 100,
+        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+        onSuccess: handlePaystackSuccess,
+        onClose: () => { },
+        // metadata: {
+        //     customer: {
+        //         userId: user?.id,
+        //         firstName: user?.firstName,
+        //         lastName: user?.lastName,
+        //         description: 'Fund NGN Wallet',
+        //     }
+        // }
+    }
 
     return (
         <Modal
@@ -141,7 +158,12 @@ export default function InsufficientFundsModal({
                             label: 'Fund NGN Wallet',
                             children: (
                                 <div className="py-4">
-                                    <Button
+                                    <PaystackButton
+                                        {...paystackButtonComponentProps}
+                                        className='text-center w-full bg-[#D62027] hover:bg-[#B91C22]'
+                                        text={` Pay ₦${ngnAmount.toFixed(2)}`}
+                                    />
+                                    {/* <Button
                                         type="primary"
                                         onClick={() => initializePayment({
                                             onSuccess: handlePaystackSuccess,
@@ -151,7 +173,7 @@ export default function InsufficientFundsModal({
                                         className="w-full bg-[#D62027] hover:bg-[#B91C22]"
                                     >
                                         Pay ₦{ngnAmount.toFixed(2)}
-                                    </Button>
+                                    </Button> */}
                                 </div>
                             ),
                         },
@@ -162,8 +184,10 @@ export default function InsufficientFundsModal({
                                 <div className="py-4">
                                     {walletAddress ? (
                                         <div className="flex flex-col items-center">
-                                            {qrCode && (
+                                            {qrCode ? (
                                                 <img src={qrCode} alt="QR Code" style={{ width: 200, height: 200 }} />
+                                            ) : (
+                                                <QRCode value={walletAddress} size={200} />
                                             )}
                                             <p className="mt-4 text-center text-sm">
                                                 Send ${usdAmount.toFixed(2)} USDT to:
@@ -173,9 +197,13 @@ export default function InsufficientFundsModal({
                                                 </code>
                                             </p>
                                             {paymentUrl && (
-                                                <a href={paymentUrl} target="_blank" rel="noopener noreferrer" className="mt-2 text-blue-600 underline">
+                                                <Button
+                                                    type="primary"
+                                                    onClick={() => window.open(paymentUrl, '_blank')}
+                                                    className="mt-2 bg-[#D62027] hover:bg-[#B91C22]"
+                                                >
                                                     Open Payment Page
-                                                </a>
+                                                </Button>
                                             )}
                                             {paymentConfirmed && (
                                                 <div className="mt-4 text-green-600 font-bold">Payment Confirmed!</div>

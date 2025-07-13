@@ -1,5 +1,5 @@
 import { api } from './api';
-import { cryptomusService } from './cryptomusService';
+// import { cryptomusService } from './cryptomusService';
 
 interface WalletBalance {
     id: number;

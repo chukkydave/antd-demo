@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal, Button, Tabs } from 'antd';
-import { PaystackButton, usePaystackPayment } from 'react-paystack';
+import { PaystackButton } from 'react-paystack';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { walletService } from '@/services/walletService';
@@ -9,7 +9,8 @@ import { useWallet } from '@/contexts/WalletContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import QRCode from 'react-qr-code';
 import { message } from 'antd';
-import { generatePaymentReference } from '@/utils/paymentUtils';
+// import { generatePaymentReference } from '@/utils/paymentUtils';
+import Image from 'next/image';
 
 interface InsufficientFundsModalProps {
     isOpen: boolean;
@@ -47,35 +48,34 @@ export default function InsufficientFundsModal({
     const ngnAmount = currency === 'NGN' ? requiredAmount : requiredAmount * rates.NGN;
     const usdAmount = currency === 'USD' ? requiredAmount : requiredAmount / rates.NGN;
 
-    const config = {
-        reference: generatePaymentReference('PAYSTACK'),
-        email: user?.email || '',
-        amount: ngnAmount * 100,
-        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
-    };
+    // const config = {
+    //     reference: generatePaymentReference('PAYSTACK'),
+    //     email: user?.email || '',
+    //     amount: ngnAmount * 100,
+    //     key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+    //     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!
+    // };
 
-    const initializePayment = usePaystackPayment(config);
+    // const initializePayment = usePaystackPayment(config);
 
     const handlePaystackSuccess = async (response: PaystackResponse) => {
         setLoading(true);
-        console.log(response);
-        // try {
-        //     await walletService.fundNGN({
-        //         reference: response.reference,
-        //         amount: ngnAmount
-        //     });
-        //     message.success('Wallet funded successfully');
-        //     await refetchBalance();
-        //     onSuccess();
-        //     onClose();
-        // } catch (error) {
-        //     console.log(error);
-        //     const errorMessage = error instanceof Error ? error.message : 'Failed to fund wallet';
-        //     message.error(errorMessage);
-        // } finally {
-        //     setLoading(false);
-        // }
+        try {
+            await walletService.fundNGN({
+                reference: response.reference,
+                amount: ngnAmount
+            });
+            message.success('Wallet funded successfully');
+            await refetchBalance();
+            onSuccess();
+            onClose();
+        } catch (error) {
+            console.log(error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fund wallet';
+            message.error(errorMessage);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCryptoPayment = async () => {
@@ -185,7 +185,13 @@ export default function InsufficientFundsModal({
                                     {walletAddress ? (
                                         <div className="flex flex-col items-center">
                                             {qrCode ? (
-                                                <img src={qrCode} alt="QR Code" style={{ width: 200, height: 200 }} />
+                                                <Image
+                                                    src={qrCode}
+                                                    alt="QR Code"
+                                                    width={200}
+                                                    height={200}
+                                                    unoptimized
+                                                />
                                             ) : (
                                                 <QRCode value={walletAddress} size={200} />
                                             )}

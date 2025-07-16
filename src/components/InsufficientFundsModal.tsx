@@ -11,6 +11,7 @@ import QRCode from 'react-qr-code';
 import { message } from 'antd';
 // import { generatePaymentReference } from '@/utils/paymentUtils';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface InsufficientFundsModalProps {
     isOpen: boolean;
@@ -33,7 +34,7 @@ export default function InsufficientFundsModal({
     onSuccess
 }: InsufficientFundsModalProps) {
     const [activeTab, setActiveTab] = useState(currency === 'NGN' ? 'paystack' : 'crypto');
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const { refetchBalance } = useWallet();
     const { rates } = useCurrency();
     const [loading, setLoading] = useState(false);
@@ -43,6 +44,7 @@ export default function InsufficientFundsModal({
     const [orderId, setOrderId] = useState('');
     const [polling, setPolling] = useState(false);
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+    const router = useRouter();
 
     // Calculate amounts in both currencies
     const ngnAmount = currency === 'NGN' ? requiredAmount : requiredAmount * rates.NGN;
@@ -79,6 +81,14 @@ export default function InsufficientFundsModal({
     };
 
     const handleCryptoPayment = async () => {
+        // Check if user is authenticated before creating payment
+        if (!isAuthenticated || !user) {
+            message.error('Please login to continue with payment');
+            onClose();
+            router.push('/login');
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await walletService.fundUSD(usdAmount);
@@ -122,6 +132,7 @@ export default function InsufficientFundsModal({
 
     const paystackButtonComponentProps = {
         email: user?.email || '',
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
         amount: ngnAmount * 100,
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         onSuccess: handlePaystackSuccess,
@@ -158,17 +169,38 @@ export default function InsufficientFundsModal({
                             label: 'Fund NGN Wallet',
                             children: (
                                 <div className="py-4">
-                                    <PaystackButton
-                                        {...paystackButtonComponentProps}
-                                        className='text-center w-full bg-[#D62027] hover:bg-[#B91C22]'
-                                        text={` Pay ₦${ngnAmount.toFixed(2)}`}
-                                    />
+                                    {!isAuthenticated || !user ? (
+                                        <div className="text-center">
+                                            <p className="text-red-500 mb-4">Please login to continue with payment</p>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    onClose();
+                                                    router.push('/login');
+                                                }}
+                                                className="w-full bg-[#D62027] hover:bg-[#B91C22]"
+                                            >
+                                                Go to Login
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <PaystackButton
+                                            {...paystackButtonComponentProps}
+                                            className='text-center w-full bg-[#D62027] hover:bg-[#B91C22]'
+                                            text={` Pay ₦${ngnAmount.toFixed(2)}`}
+                                            onSuccess={handlePaystackSuccess}
+                                            onClose={() => { }}
+                                        />
+                                    )}
                                     {/* <Button
                                         type="primary"
-                                        onClick={() => initializePayment({
-                                            onSuccess: handlePaystackSuccess,
-                                            onClose: () => { }
-                                        })}
+                                        onClick={() => {
+                                            const initializePayment = usePaystackPayment(config);
+                                            initializePayment({
+                                                onSuccess: handlePaystackSuccess,
+                                                onClose: () => { }
+                                            });
+                                        }}
                                         loading={loading}
                                         className="w-full bg-[#D62027] hover:bg-[#B91C22]"
                                     >
@@ -182,7 +214,21 @@ export default function InsufficientFundsModal({
                             label: 'Fund USD Wallet',
                             children: (
                                 <div className="py-4">
-                                    {walletAddress ? (
+                                    {!isAuthenticated || !user ? (
+                                        <div className="text-center">
+                                            <p className="text-red-500 mb-4">Please login to continue with payment</p>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    onClose();
+                                                    router.push('/login');
+                                                }}
+                                                className="w-full bg-[#D62027] hover:bg-[#B91C22]"
+                                            >
+                                                Go to Login
+                                            </Button>
+                                        </div>
+                                    ) : walletAddress ? (
                                         <div className="flex flex-col items-center">
                                             {qrCode ? (
                                                 <Image

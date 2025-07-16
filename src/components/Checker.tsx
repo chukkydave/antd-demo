@@ -169,6 +169,13 @@ function Checker() {
         const selectedServiceData = services.find(service => service.service === selectedService);
 
         if (selectedServiceData && selectedServiceData.price !== '0.00') {
+            // Check if user is authenticated before showing payment modal
+            if (!user) {
+                toast.error('Please login to continue with payment');
+                router.push('/login');
+                return;
+            }
+
             // Price from API is in USD
             const usdPrice = parseFloat(selectedServiceData.price);
             setSelectedPrice(usdPrice);

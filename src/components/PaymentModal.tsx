@@ -4,6 +4,8 @@ import { Modal, Button } from 'antd';
 import { useState } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import InsufficientFundsModal from './InsufficientFundsModal';
 import { message } from 'antd';
 import { walletService } from '@/services/walletService';
@@ -27,6 +29,8 @@ interface PaymentModalProps {
 const PaymentModal = ({ isOpen, onClose, service, onSuccess }: PaymentModalProps) => {
     const { balance, refetchBalance } = useWallet();
     const { currentCurrency } = useCurrency();
+    const { user, isAuthenticated } = useAuth();
+    const router = useRouter();
     const [showFundingModal, setShowFundingModal] = useState(false);
 
     // Get the amount in the current currency based on the selected currency
@@ -35,6 +39,14 @@ const PaymentModal = ({ isOpen, onClose, service, onSuccess }: PaymentModalProps
         : service.price.NGN;
 
     const handlePayment = async () => {
+        // Check if user is authenticated
+        if (!isAuthenticated || !user) {
+            message.error('Please login to continue with payment');
+            onClose();
+            router.push('/login');
+            return;
+        }
+
         // Explicitly refresh balance before checking
         await refetchBalance();
 
